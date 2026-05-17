@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free comprehensive weight loss calculator suite: TDEE, BMI, calorie deficit, macros, body fat, ideal weight, plateau predictor & progress tracker. Science-backed tools for real results.">
+<meta name="keywords" content="weight loss calculator, TDEE calculator, calorie calculator, BMI calculator, macro calculator, body fat calculator, ideal weight calculator">
+<meta name="author" content="WeightLossCalc.com">
+<title>Weight Loss Calculator Suite – TDEE, BMI, Macros & More | Free Tools</title>
+
+<!-- Open Graph -->
+<meta property="og:title" content="Free Weight Loss Calculator Suite – 9 Tools in One">
+<meta property="og:description" content="Calculate your TDEE, BMI, calorie deficit, macros, body fat %, and more. Includes plateau predictor and progress tracker.">
+<meta property="og:type" content="website">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green:   #2e7d32;
+  --green2:  #43a047;
+  --green3:  #66bb6a;
+  --greenlt: #e8f5e9;
+  --orange:  #f57c00;
+  --red:     #c62828;
+  --blue:    #1565c0;
+  --gray1:   #212121;
+  --gray2:   #424242;
+  --gray3:   #757575;
+  --gray4:   #bdbdbd;
+  --gray5:   #f5f5f5;
+  --white:   #ffffff;
+  --shadow:  0 2px 12px rgba(0,0,0,.10);
+  --radius:  12px;
+  --font:    'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); color: var(--gray1); background: var(--gray5); line-height: 1.6; font-size: 16px; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.container { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+header {
+  background: linear-gradient(135deg, var(--green) 0%, var(--green2) 100%);
+  color: var(--white);
+  padding: 40px 16px 32px;
+  text-align: center;
+}
+header h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -.5px; }
+header p { margin-top: 10px; font-size: 1rem; opacity: .88; max-width: 620px; margin-inline: auto; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+.badge { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.30); border-radius: 20px; padding: 4px 14px; font-size: .82rem; font-weight: 600; }
+
+/* ============================================================
+   AD SLOTS
+   ============================================================ */
+.ad-slot { display: none; }
+
+/* ============================================================
+   NAV TABS
+   ============================================================ */
+.tabs-wrapper { background: var(--white); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+.tabs { display: flex; overflow-x: auto; gap: 2px; padding: 0 16px; scroll-snap-type: x mandatory; }
+.tabs::-webkit-scrollbar { height: 16px; }
+.tabs::-webkit-scrollbar-track { background: #d0e8d0; border-radius: 8px; }
+.tabs::-webkit-scrollbar-thumb { background: var(--green2); border-radius: 8px; border: 3px solid #d0e8d0; }
+.tabs::-webkit-scrollbar-thumb:hover { background: var(--green); }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 14px 18px;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--gray3);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+  scroll-snap-align: start;
+}
+.tab-btn:hover { color: var(--green); }
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section { display: none; padding: 32px 0 48px; }
+.section.active { display: block; }
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px;
+  margin-bottom: 20px;
+}
+.card h2 { font-size: 1.3rem; color: var(--green); margin-bottom: 6px; }
+.card .desc { color: var(--gray3); font-size: .92rem; margin-bottom: 22px; }
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+label { font-size: .85rem; font-weight: 600; color: var(--gray2); }
+input[type="number"], select, input[type="range"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--gray4);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font);
+  transition: border-color .2s;
+  background: var(--white);
+  color: var(--gray1);
+}
+input[type="number"]:focus, select:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(46,125,50,.12); }
+input[type="range"] { padding: 4px 0; border: none; accent-color: var(--green); cursor: pointer; }
+.unit-toggle { display: flex; gap: 0; margin-bottom: 16px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--green); width: fit-content; }
+.unit-btn { padding: 7px 20px; border: none; background: var(--white); font-family: var(--font); font-size: .88rem; font-weight: 600; color: var(--green); cursor: pointer; transition: all .2s; }
+.unit-btn.active { background: var(--green); color: var(--white); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  margin-top: 20px;
+}
+.btn-primary { background: var(--green); color: var(--white); }
+.btn-primary:hover { background: var(--green2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,125,50,.3); }
+.btn-secondary { background: var(--gray5); color: var(--gray2); border: 1.5px solid var(--gray4); margin-top: 10px; }
+.btn-danger { background: var(--red); color: var(--white); }
+
+/* ============================================================
+   RESULTS
+   ============================================================ */
+.results { margin-top: 24px; display: none; }
+.results.show { display: block; }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.result-box {
+  background: var(--greenlt);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.result-box.highlight { background: var(--green); color: var(--white); }
+.result-box.highlight .result-label { color: rgba(255,255,255,.8); }
+.result-box.warning { background: #fff3e0; }
+.result-box.danger { background: #ffebee; }
+.result-label { font-size: .78rem; font-weight: 600; color: var(--gray3); text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 4px; }
+.result-value { font-size: 1.6rem; font-weight: 700; color: var(--green); line-height: 1.1; }
+.result-box.highlight .result-value { color: var(--white); }
+.result-unit { font-size: .82rem; font-weight: 400; color: var(--gray3); }
+
+/* BMI gauge */
+.bmi-gauge-wrap { margin: 20px 0; }
+.bmi-bar { height: 18px; border-radius: 9px; background: linear-gradient(to right, #1565c0 0%,#42a5f5 14.9%,#66bb6a 15%,#43a047 29.9%,#ffca28 30%,#ffa726 44.9%,#ef5350 45%,#b71c1c 100%); position: relative; }
+.bmi-marker { position: absolute; top: -8px; width: 4px; height: 34px; background: var(--gray1); border-radius: 2px; transition: left .5s; }
+.bmi-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--gray3); margin-top: 4px; }
+.bmi-category { text-align: center; font-size: 1.1rem; font-weight: 700; margin-top: 10px; }
+
+/* Progress bar */
+.progress-wrap { margin: 10px 0; }
+.progress-bar-bg { height: 10px; border-radius: 5px; background: var(--gray5); overflow: hidden; border: 1px solid var(--gray4); }
+.progress-bar-fill { height: 100%; border-radius: 5px; background: var(--green); transition: width .6s; }
+
+/* Macro donut area */
+.macro-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-top: 16px; }
+.macro-chart-wrap { width: 180px; height: 180px; flex-shrink: 0; }
+.macro-legend { display: flex; flex-direction: column; gap: 10px; }
+.macro-item { display: flex; align-items: center; gap: 10px; }
+.macro-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+.macro-name { font-weight: 700; font-size: .95rem; }
+.macro-sub { font-size: .82rem; color: var(--gray3); }
+
+/* Timeline chart */
+.chart-wrap { margin-top: 20px; position: relative; }
+
+/* Insight box */
+.insight { background: #e3f2fd; border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-top: 16px; font-size: .9rem; }
+.insight.warn { background: #fff3e0; border-left-color: var(--orange); }
+.insight.success { background: var(--greenlt); border-left-color: var(--green); }
+.insight strong { display: block; margin-bottom: 2px; }
+
+/* Exercise table */
+.ex-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.ex-table th { background: var(--greenlt); padding: 10px 12px; text-align: left; font-size: .8rem; text-transform: uppercase; color: var(--green); letter-spacing: .3px; }
+.ex-table td { padding: 9px 12px; border-bottom: 1px solid var(--gray5); }
+.ex-table tr:hover td { background: var(--gray5); }
+.ex-table .cal { font-weight: 700; color: var(--green); }
+
+/* Progress tracker */
+.log-entry { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray5); }
+.log-date { font-size: .8rem; color: var(--gray3); width: 90px; flex-shrink: 0; }
+.log-weight { font-weight: 700; font-size: 1.05rem; }
+.log-change { font-size: .85rem; padding: 2px 8px; border-radius: 10px; }
+.log-change.neg { background: #e8f5e9; color: var(--green); }
+.log-change.pos { background: #ffebee; color: var(--red); }
+.log-change.zero { background: var(--gray5); color: var(--gray3); }
+.log-note { font-size: .82rem; color: var(--gray3); flex: 1; }
+.log-del { cursor: pointer; color: var(--gray4); font-size: 1.1rem; border: none; background: none; padding: 4px; }
+.log-del:hover { color: var(--red); }
+
+/* FAQ */
+.faq-item { border-bottom: 1px solid var(--gray5); }
+.faq-q { width: 100%; text-align: left; background: none; border: none; padding: 16px 0; font-family: var(--font); font-size: .97rem; font-weight: 700; color: var(--gray1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.faq-q::after { content: '＋'; color: var(--green); font-size: 1.2rem; flex-shrink: 0; }
+.faq-q.open::after { content: '－'; }
+.faq-a { display: none; padding: 0 0 16px; color: var(--gray2); font-size: .92rem; line-height: 1.7; }
+.faq-a.open { display: block; }
+
+/* Footer */
+footer { background: var(--gray1); color: var(--gray4); text-align: center; padding: 28px 16px; font-size: .85rem; margin-top: 40px; }
+footer a { color: var(--green3); text-decoration: none; }
+footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width: 700px; margin-inline: auto; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .card { padding: 20px 16px; }
+  .btn { width: 100%; justify-content: center; }
+  .form-grid { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: repeat(2, 1fr); }
+  .macro-chart-wrap { width: 140px; height: 140px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <h1>🥗 Weight Loss Calculator Suite</h1>
+    <p>9 science-backed tools in one place — calculate calories, macros, body fat, and track your real progress.</p>
+    <div class="badge-row">
+      <span class="badge">✓ TDEE</span>
+      <span class="badge">✓ BMI</span>
+      <span class="badge">✓ Macros</span>
+      <span class="badge">✓ Body Fat %</span>
+      <span class="badge">✓ Plateau Predictor</span>
+      <span class="badge">✓ Progress Tracker</span>
+    </div>
+  </div>
+</header>
+
+<!-- AD SLOT TOP -->
+<div class="container">
+  <div class="ad-slot">
+    <span>Advertisement</span>
+    <!-- Google AdSense: Replace with your ad code -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_CLIENT_ID" crossorigin="anonymous"></script> -->
+    <div style="min-height:90px;display:flex;align-items:center;justify-content:center;color:#bdbdbd;">728×90 Leaderboard Ad</div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="tabs-wrapper">
+  <div class="container">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" onclick="showTab('tdee')" role="tab">🔥 TDEE & Calories</button>
+      <button class="tab-btn" onclick="showTab('bmi')" role="tab">📊 BMI</button>
+      <button class="tab-btn" onclick="showTab('timeline')" role="tab">📅 Timeline</button>
+      <button class="tab-btn" onclick="showTab('macros')" role="tab">🥩 Macros</button>
+      <button class="tab-btn" onclick="showTab('bodyfat')" role="tab">📐 Body Fat %</button>
+      <button class="tab-btn" onclick="showTab('idealweight')" role="tab">⚖️ Ideal Weight</button>
+      <button class="tab-btn" onclick="showTab('exercise')" role="tab">🏃 Exercise Burn</button>
+      <button class="tab-btn" onclick="showTab('plateau')" role="tab">📉 Plateau Fix</button>
+      <button class="tab-btn" onclick="showTab('tracker')" role="tab">📝 Tracker</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="container">
+
+<!-- ============================================================
+     TAB 1: TDEE & CALORIES
+     ============================================================ -->
+<section id="tdee" class="section active">
+  <div class="card">
+    <h2>🔥 TDEE & Calorie Calculator</h2>
+    <p class="desc">Your Total Daily Energy Expenditure (TDEE) is the foundation of any weight loss plan. We use the <strong>Mifflin-St Jeor</strong> equation — the most accurate formula available for most people.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('tdee','imperial',this)">Imperial (lbs/in)</button>
+      <button class="unit-btn" onclick="setUnit('tdee','metric',this)">Metric (kg/cm)</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="tdee-age">Age (years)</label>
+        <input type="number" id="tdee-age" min="15" max="90" placeholder="e.g. 35">
+      </div>
+      <div class="form-group">
+        <label for="tdee-sex">Biological Sex</label>
+        <select id="tdee-sex">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="form-group tdee-imperial">
+        <label for="tdee-weight-lb">Weight (lbs)</label>
+        <input type="number" id="tdee-weight-lb" min="50" max="700" placeholder="e.g. 185">
+      </div>
+      <div class="form-group tdee-metric" style="display:none">
+        <label for="tdee-weight-kg">Weight (kg)</label>
+        <input type="number" id="tdee-weight-kg" min="20" max="300" placeholder="e.g. 84">
+      </div>
+      <div class="form-group tdee-imperial">
+        <label for="tdee-height-ft">Height (ft) <span style="font-weight:400;font-size:.8rem">e.g. 5.83 = 5'10"</span></label>
+        <input type="number" id="tdee-height-ft" min="3" max="8" step="0.01" placeholder="e.g. 5.83">
+      </div>
+      <div class="form-group tdee-metric" style="display:none">
+        <label for="tdee-height-cm">Height (cm)</label>
+        <input type="number" id="tdee-height-cm" min="100" max="250" placeholder="e.g. 178">
+      </div>
+      <div class="form-group" style="grid-column: 1 / -1">
+        <label for="tdee-activity">Activity Level</label>
+        <select id="tdee-activity">
+          <option value="1.2">Sedentary — little or no exercise, desk job</option>
+          <option value="1.375">Lightly Active — light exercise 1–3 days/week</option>
+          <option value="1.55" selected>Moderately Active — moderate exercise 3–5 days/week</option>
+          <option value="1.725">Very Active — hard exercise 6–7 days/week</option>
+          <option value="1.9">Extremely Active — physical job + daily training</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcTDEE()">Calculate My TDEE ▶</button>
+
+    <div id="tdee-results" class="results">
+      <div class="results-grid">
+        <div class="result-box">
+          <span class="result-label">BMR</span>
+          <div class="result-value" id="r-bmr">—</div>
+          <div class="result-unit">cal/day at rest</div>
+        </div>
+        <div class="result-box highlight">
+          <span class="result-label">TDEE (Maintenance)</span>
+          <div class="result-value" id="r-tdee">—</div>
+          <div class="result-unit">calories/day</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Mild Deficit (-250)</span>
+          <div class="result-value" id="r-mild">—</div>
+          <div class="result-unit">≈ 0.5 lb/week</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Moderate Deficit (-500)</span>
+          <div class="result-value" id="r-mod">—</div>
+          <div class="result-unit">≈ 1 lb/week</div>
+        </div>
+        <div class="result-box warning">
+          <span class="result-label">Aggressive (-750)</span>
+          <div class="result-value" id="r-agg">—</div>
+          <div class="result-unit">≈ 1.5 lb/week</div>
+        </div>
+        <div class="result-box danger">
+          <span class="result-label">Max Cut (-1000)</span>
+          <div class="result-value" id="r-max">—</div>
+          <div class="result-unit">≈ 2 lb/week</div>
+        </div>
+      </div>
+      <div id="tdee-insight" class="insight"></div>
+
+      <h3 style="margin:20px 0 10px;font-size:1rem;color:var(--gray2)">Both Formulas Compared</h3>
+      <div class="results-grid" id="both-formulas"></div>
+
+      <!-- Ad slot inline -->
+      <div class="ad-slot" style="margin-top:20px">
+        <span>Advertisement</span>
+        <div style="min-height:250px;display:flex;align-items:center;justify-content:center;color:#bdbdbd;">300×250 Rectangle Ad</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>❓ What is TDEE?</h2>
+    <p style="color:var(--gray2);font-size:.93rem;line-height:1.7">Your <strong>TDEE</strong> (Total Daily Energy Expenditure) is the total number of calories your body burns each day — including exercise. Eat below this number to lose weight. The closer your deficit is to 500 cal/day, the more sustainable and muscle-preserving your results will be. Extreme deficits (&gt;1000 cal/day) can cause muscle loss, fatigue, and metabolic slowdown.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 2: BMI
+     ============================================================ -->
+<section id="bmi" class="section">
+  <div class="card">
+    <h2>📊 BMI Calculator</h2>
+    <p class="desc">Body Mass Index gives a quick estimate of whether your weight is healthy for your height. Note: BMI doesn't measure body fat directly — athletes and muscular people may show "overweight" BMI despite being very healthy.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('bmi','imperial',this)">Imperial</button>
+      <button class="unit-btn" onclick="setUnit('bmi','metric',this)">Metric</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group bmi-imperial">
+        <label>Weight (lbs)</label>
+        <input type="number" id="bmi-weight-lb" placeholder="e.g. 170">
+      </div>
+      <div class="form-group bmi-metric" style="display:none">
+        <label>Weight (kg)</label>
+        <input type="number" id="bmi-weight-kg" placeholder="e.g. 77">
+      </div>
+      <div class="form-group bmi-imperial">
+        <label>Height (ft) <span style="font-weight:400;font-size:.8rem">e.g. 5.75 = 5'9"</span></label>
+        <input type="number" id="bmi-height-ft" step="0.01" placeholder="e.g. 5.75">
+      </div>
+      <div class="form-group bmi-metric" style="display:none">
+        <label>Height (cm)</label>
+        <input type="number" id="bmi-height-cm" placeholder="e.g. 175">
+      </div>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="bmi-age" placeholder="e.g. 30">
+      </div>
+      <div class="form-group">
+        <label>Sex</label>
+        <select id="bmi-sex"><option value="male">Male</option><option value="female">Female</option></select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcBMI()">Calculate BMI ▶</button>
+
+    <div id="bmi-results" class="results">
+      <div class="results-grid">
+        <div class="result-box highlight">
+          <span class="result-label">Your BMI</span>
+          <div class="result-value" id="r-bmi">—</div>
+          <div class="result-unit">kg/m²</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Category</span>
+          <div class="result-value" id="r-bmi-cat" style="font-size:1.1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Healthy Weight Range</span>
+          <div class="result-value" id="r-bmi-range" style="font-size:1rem">—</div>
+          <div class="result-unit" id="r-bmi-range-unit">lbs</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Weight to Lose/Gain</span>
+          <div class="result-value" id="r-bmi-diff">—</div>
+          <div class="result-unit" id="r-bmi-diff-unit">lbs to ideal</div>
+        </div>
+      </div>
+
+      <div class="bmi-gauge-wrap">
+        <div class="bmi-bar">
+          <div class="bmi-marker" id="bmi-marker" style="left:0%"></div>
+        </div>
+        <div class="bmi-labels">
+          <span>Under<br>(&lt;18.5)</span>
+          <span>Normal<br>(18.5–24.9)</span>
+          <span>Overweight<br>(25–29.9)</span>
+          <span>Obese<br>(30+)</span>
+        </div>
+      </div>
+      <div class="bmi-category" id="bmi-cat-text"></div>
+
+      <div id="bmi-insight" class="insight" style="margin-top:16px"></div>
+
+      <div class="ad-slot" style="margin-top:20px">
+        <span>Advertisement</span>
+        <div style="min-height:250px;display:flex;align-items:center;justify-content:center;color:#bdbdbd;">300×250 Rectangle Ad</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 BMI Reference Table</h2>
+    <table class="ex-table">
+      <thead><tr><th>BMI</th><th>Category</th><th>Health Risk</th></tr></thead>
+      <tbody>
+        <tr><td>&lt; 18.5</td><td>Underweight</td><td>Malnutrition risk, osteoporosis</td></tr>
+        <tr><td>18.5 – 24.9</td><td style="color:var(--green);font-weight:700">Normal Weight ✓</td><td>Lowest risk range</td></tr>
+        <tr><td>25.0 – 29.9</td><td>Overweight</td><td>Moderate — elevated diabetes/heart risk</td></tr>
+        <tr><td>30.0 – 34.9</td><td>Obese (Class I)</td><td>High risk</td></tr>
+        <tr><td>35.0 – 39.9</td><td>Obese (Class II)</td><td>Very high risk</td></tr>
+        <tr><td>≥ 40.0</td><td>Obese (Class III)</td><td>Extremely high risk — seek medical guidance</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 3: TIMELINE
+     ============================================================ -->
+<section id="timeline" class="section">
+  <div class="card">
+    <h2>📅 Weight Loss Timeline Calculator</h2>
+    <p class="desc">How long will it take to reach your goal? Enter your current and goal weight plus your planned daily calorie deficit. Includes plateau modeling — because most people's progress slows after the first few weeks.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('tl','imperial',this)">lbs</button>
+      <button class="unit-btn" onclick="setUnit('tl','metric',this)">kg</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Current Weight</label>
+        <input type="number" id="tl-current" placeholder="e.g. 200">
+      </div>
+      <div class="form-group">
+        <label>Goal Weight</label>
+        <input type="number" id="tl-goal" placeholder="e.g. 165">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Daily Calorie Deficit: <strong id="tl-deficit-val">500</strong> calories</label>
+        <input type="range" id="tl-deficit" min="100" max="1200" step="50" value="500" oninput="document.getElementById('tl-deficit-val').textContent=this.value">
+      </div>
+      <div class="form-group">
+        <label>Account for Plateau Effect?</label>
+        <select id="tl-plateau">
+          <option value="yes">Yes — more realistic estimate</option>
+          <option value="no">No — simple calculation only</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcTimeline()">Show My Timeline ▶</button>
+
+    <div id="tl-results" class="results">
+      <div class="results-grid">
+        <div class="result-box highlight">
+          <span class="result-label">Time to Goal</span>
+          <div class="result-value" id="r-tl-weeks">—</div>
+          <div class="result-unit">weeks</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Estimated Date</span>
+          <div class="result-value" id="r-tl-date" style="font-size:1.1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Weight to Lose</span>
+          <div class="result-value" id="r-tl-total">—</div>
+          <div class="result-unit" id="r-tl-unit">lbs</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Avg Rate/Week</span>
+          <div class="result-value" id="r-tl-rate">—</div>
+          <div class="result-unit" id="r-tl-rate-unit">lbs/week</div>
+        </div>
+      </div>
+
+      <div id="tl-insight" class="insight"></div>
+      <div class="chart-wrap"><canvas id="tl-chart" height="300"></canvas></div>
+
+      <div class="ad-slot" style="margin-top:20px">
+        <span>Advertisement</span>
+        <div style="min-height:250px;display:flex;align-items:center;justify-content:center;color:#bdbdbd;">300×250 Rectangle Ad</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 4: MACROS
+     ============================================================ -->
+<section id="macros" class="section">
+  <div class="card">
+    <h2>🥩 Macronutrient Calculator</h2>
+    <p class="desc">Knowing your calories isn't enough — the right macro split maximizes fat loss while preserving muscle. Protein is the most important macro for weight loss.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Daily Calorie Target</label>
+        <input type="number" id="macro-cals" placeholder="e.g. 1800 (from TDEE tab)">
+      </div>
+      <div class="form-group">
+        <label>Goal</label>
+        <select id="macro-goal">
+          <option value="loss">Weight Loss (fat burn)</option>
+          <option value="loss-muscle">Weight Loss + Muscle Preserve</option>
+          <option value="maintain">Maintenance / Recomp</option>
+          <option value="gain">Muscle Gain</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Diet Preference</label>
+        <select id="macro-diet">
+          <option value="standard">Standard (40/30/30)</option>
+          <option value="highprotein">High Protein (40P/20C/40F)</option>
+          <option value="lowcarb">Low Carb (40P/10C/50F)</option>
+          <option value="keto">Keto (30P/5C/65F)</option>
+          <option value="lowfat">Low Fat (35P/50C/15F)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Body Weight <span style="font-weight:400;color:var(--gray3)">(for protein floor)</span></label>
+        <input type="number" id="macro-weight" placeholder="lbs">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcMacros()">Calculate My Macros ▶</button>
+
+    <div id="macro-results" class="results">
+      <div class="macro-row">
+        <div class="macro-chart-wrap"><canvas id="macro-chart"></canvas></div>
+        <div class="macro-legend" id="macro-legend"></div>
+      </div>
+      <div class="results-grid" style="margin-top:20px" id="macro-boxes"></div>
+      <div id="macro-insight" class="insight" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📚 Macro Guide</h2>
+    <table class="ex-table">
+      <thead><tr><th>Macro</th><th>Calories/gram</th><th>Primary Role</th><th>Min Daily (gen. rec.)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Protein</strong></td><td>4 cal/g</td><td>Muscle repair, satiety, thermic effect</td><td>0.7g per lb body weight</td></tr>
+        <tr><td><strong>Carbohydrates</strong></td><td>4 cal/g</td><td>Energy, brain fuel, fiber</td><td>Depends on activity</td></tr>
+        <tr><td><strong>Fat</strong></td><td>9 cal/g</td><td>Hormones, fat-soluble vitamins</td><td>20–35% of calories</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 5: BODY FAT
+     ============================================================ -->
+<section id="bodyfat" class="section">
+  <div class="card">
+    <h2>📐 Body Fat % Calculator</h2>
+    <p class="desc">Uses the <strong>US Navy method</strong> — one of the most accurate field methods. You'll need a soft measuring tape. Measurements in inches or cm.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('bf','imperial',this)">Inches</button>
+      <button class="unit-btn" onclick="setUnit('bf','metric',this)">Centimeters</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Sex</label>
+        <select id="bf-sex" onchange="updateBFForm()">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Height</label>
+        <input type="number" id="bf-height" placeholder="inches or cm">
+      </div>
+      <div class="form-group">
+        <label>Neck circumference <span style="font-weight:400;font-size:.8rem">(below larynx)</span></label>
+        <input type="number" id="bf-neck" step="0.1" placeholder="e.g. 15.5">
+      </div>
+      <div class="form-group">
+        <label>Waist circumference <span style="font-weight:400;font-size:.8rem">(at navel)</span></label>
+        <input type="number" id="bf-waist" step="0.1" placeholder="e.g. 34">
+      </div>
+      <div class="form-group" id="bf-hip-group">
+        <label>Hip circumference <span style="font-weight:400;font-size:.8rem">(women only, widest)</span></label>
+        <input type="number" id="bf-hip" step="0.1" placeholder="e.g. 40">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcBodyFat()">Calculate Body Fat % ▶</button>
+
+    <div id="bf-results" class="results">
+      <div class="results-grid">
+        <div class="result-box highlight">
+          <span class="result-label">Body Fat %</span>
+          <div class="result-value" id="r-bf">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Category</span>
+          <div class="result-value" id="r-bf-cat" style="font-size:1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Fat Mass</span>
+          <div class="result-value" id="r-bf-fat">—</div>
+          <div class="result-unit" id="r-bf-fat-u">lbs</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Lean Mass</span>
+          <div class="result-value" id="r-bf-lean">—</div>
+          <div class="result-unit" id="r-bf-lean-u">lbs</div>
+        </div>
+      </div>
+      <div id="bf-insight" class="insight" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 Body Fat % Reference Ranges</h2>
+    <table class="ex-table">
+      <thead><tr><th>Category</th><th>Men</th><th>Women</th></tr></thead>
+      <tbody>
+        <tr><td>Essential Fat</td><td>2–5%</td><td>10–13%</td></tr>
+        <tr><td><strong style="color:var(--green)">Athlete</strong></td><td>6–13%</td><td>14–20%</td></tr>
+        <tr><td><strong style="color:var(--green)">Fitness</strong></td><td>14–17%</td><td>21–24%</td></tr>
+        <tr><td>Average</td><td>18–24%</td><td>25–31%</td></tr>
+        <tr><td style="color:var(--red)">Obese</td><td>25%+</td><td>32%+</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 6: IDEAL WEIGHT
+     ============================================================ -->
+<section id="idealweight" class="section">
+  <div class="card">
+    <h2>⚖️ Ideal Body Weight Calculator</h2>
+    <p class="desc">Four different medical formulas — Devine, Robinson, Miller, and Hamwi — each give slightly different results. The average gives you a solid target range.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('iw','imperial',this)">Imperial</button>
+      <button class="unit-btn" onclick="setUnit('iw','metric',this)">Metric</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Sex</label>
+        <select id="iw-sex"><option value="male">Male</option><option value="female">Female</option></select>
+      </div>
+      <div class="form-group iw-imperial">
+        <label>Height (ft) <span style="font-weight:400;font-size:.8rem">e.g. 5.67 = 5'8"</span></label>
+        <input type="number" id="iw-height-ft" step="0.01" min="3" max="8" placeholder="e.g. 5.67">
+      </div>
+      <div class="form-group iw-metric" style="display:none">
+        <label>Height (cm)</label>
+        <input type="number" id="iw-height-cm" placeholder="e.g. 173">
+      </div>
+      <div class="form-group">
+        <label>Current Weight (lbs or kg)</label>
+        <input type="number" id="iw-current" placeholder="e.g. 185">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcIdealWeight()">Calculate ▶</button>
+
+    <div id="iw-results" class="results">
+      <div class="results-grid" id="iw-boxes"></div>
+      <div id="iw-insight" class="insight" style="margin-top:16px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 7: EXERCISE BURN
+     ============================================================ -->
+<section id="exercise" class="section">
+  <div class="card">
+    <h2>🏃 Exercise Calorie Burn Calculator</h2>
+    <p class="desc">Enter your weight and duration to see calories burned for common activities. Based on MET (Metabolic Equivalent of Task) values from the Compendium of Physical Activities.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Your Weight (lbs)</label>
+        <input type="number" id="ex-weight" placeholder="e.g. 180">
+      </div>
+      <div class="form-group">
+        <label>Duration (minutes)</label>
+        <input type="number" id="ex-duration" placeholder="e.g. 45" value="30">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcExercise()">Show Calorie Burn ▶</button>
+
+    <div id="ex-results" class="results">
+      <table class="ex-table" id="ex-table">
+        <thead><tr><th>Activity</th><th>Intensity</th><th>Calories Burned</th></tr></thead>
+        <tbody id="ex-body"></tbody>
+      </table>
+      <div class="insight" style="margin-top:16px">
+        <strong>💡 Pro tip:</strong> Cardio burns calories during exercise; strength training burns calories for up to 48 hours after. Combine both for best results.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 8: PLATEAU FIX
+     ============================================================ -->
+<section id="plateau" class="section">
+  <div class="card">
+    <h2>📉 Plateau Predictor & Fix</h2>
+    <p class="desc">One of the most frustrating parts of weight loss: you're doing everything right, but the scale stops moving. This is called <strong>metabolic adaptation</strong> — and it's completely normal.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Weeks on current deficit</label>
+        <input type="number" id="p-weeks" placeholder="e.g. 8">
+      </div>
+      <div class="form-group">
+        <label>Total weight lost so far (lbs)</label>
+        <input type="number" id="p-lost" placeholder="e.g. 12">
+      </div>
+      <div class="form-group">
+        <label>Current daily calorie intake</label>
+        <input type="number" id="p-intake" placeholder="e.g. 1600">
+      </div>
+      <div class="form-group">
+        <label>Original body weight (lbs)</label>
+        <input type="number" id="p-original" placeholder="e.g. 200">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcPlateau()">Diagnose My Plateau ▶</button>
+
+    <div id="p-results" class="results">
+      <div id="p-score-box" class="result-box highlight" style="text-align:center;padding:24px;margin-bottom:20px">
+        <span class="result-label">Plateau Risk Score</span>
+        <div class="result-value" id="r-p-score">—</div>
+      </div>
+      <div id="p-advice"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🛠️ Science-Backed Plateau Breakers</h2>
+    <div style="display:grid;gap:14px;margin-top:8px">
+      <div class="insight success">
+        <strong>1. Diet Break (1–2 weeks at maintenance)</strong>
+        Eating at TDEE for 1–2 weeks resets leptin levels and reduces cortisol, often kicking off faster loss afterwards. (Byrne et al., 2017 — the "MATADOR" study)
+      </div>
+      <div class="insight success">
+        <strong>2. Reverse Dieting</strong>
+        Gradually increase calories by 50–100/week over several weeks to restore metabolic rate before cutting again.
+      </div>
+      <div class="insight success">
+        <strong>3. Protein Reset</strong>
+        Bump protein to 0.9–1g per lb of body weight. Higher protein has a thermic effect (burns 25–30% of its own calories during digestion).
+      </div>
+      <div class="insight success">
+        <strong>4. Calorie Cycling</strong>
+        Eat maintenance on hard training days, deficit on rest days. Prevents adaptive thermogenesis better than a fixed deficit.
+      </div>
+      <div class="insight success">
+        <strong>5. Strength Training</strong>
+        Adding or increasing resistance training preserves muscle during deficits, maintaining a higher RMR long-term.
+      </div>
+      <div class="insight warn">
+        <strong>⚠️ What NOT to do:</strong>
+        Don't cut calories further below 1200 (women) or 1500 (men). This worsens metabolic slowdown and risks nutrient deficiencies.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 9: TRACKER
+     ============================================================ -->
+<section id="tracker" class="section">
+  <div class="card">
+    <h2>📝 Weight Progress Tracker</h2>
+    <p class="desc">Log your weight over time — stored locally in your browser. No account needed, no data leaves your device.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="tr-date" style="padding:10px 14px;border:1.5px solid var(--gray4);border-radius:8px;font-size:1rem;font-family:var(--font);background:var(--white)">
+      </div>
+      <div class="form-group">
+        <label>Weight (lbs or kg)</label>
+        <input type="number" id="tr-weight" step="0.1" placeholder="e.g. 182.4">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Note (optional)</label>
+        <input type="text" id="tr-note" placeholder="e.g. Started gym, felt good" style="padding:10px 14px;border:1.5px solid var(--gray4);border-radius:8px;font-size:1rem;font-family:var(--font)">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="addLog()">+ Log Weight</button>
+
+    <div id="tr-stats" style="display:none;margin-top:24px">
+      <div class="results-grid" id="tr-stat-boxes"></div>
+      <div class="chart-wrap" style="margin-top:20px"><canvas id="tr-chart" height="280"></canvas></div>
+      <div style="display:flex;gap:10px;margin-top:20px;align-items:center">
+        <h3 style="font-size:1rem;color:var(--gray2)">Log Entries</h3>
+        <button class="btn btn-secondary" style="margin-top:0;padding:6px 14px;font-size:.82rem" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn btn-danger" style="margin-top:0;padding:6px 14px;font-size:.82rem" onclick="clearLog()">🗑 Clear All</button>
+      </div>
+      <div id="tr-log" style="margin-top:10px"></div>
+    </div>
+    <div id="tr-empty" style="text-align:center;padding:30px;color:var(--gray3);display:none">
+      <div style="font-size:2.5rem;margin-bottom:8px">📊</div>
+      Log your first weight entry to start tracking!
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- AD SLOT BOTTOM -->
+<div class="container">
+  <div class="ad-slot">
+    <span>Advertisement</span>
+    <div style="min-height:90px;display:flex;align-items:center;justify-content:center;color:#bdbdbd;">728×90 Leaderboard Ad</div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="container">
+  <div class="card">
+    <h2 style="margin-bottom:16px">❓ Frequently Asked Questions</h2>
+    <div id="faq-list">
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">How many calories should I eat to lose 1 pound per week?</button><div class="faq-a">A deficit of approximately 500 calories per day creates a weekly deficit of 3,500 calories — roughly equal to one pound of fat. However, due to water weight, muscle tissue, and metabolic adaptation, actual results will vary. A deficit of 400–600 cal/day is considered the "sweet spot" — aggressive enough to see results, mild enough to preserve muscle and maintain energy.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Why is my weight loss slowing down even though I'm eating the same?</button><div class="faq-a">This is metabolic adaptation. As you lose weight, your body is smaller and requires fewer calories, so your TDEE decreases. Additionally, your body reduces non-exercise activity (like fidgeting) and lowers thyroid output to conserve energy. The plateau predictor tool above can help you diagnose this.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Is BMI accurate for athletes and muscular people?</button><div class="faq-a">No — BMI is a rough population-level screening tool. It does not distinguish between muscle and fat. A bodybuilder may have a BMI of 30 (obese) while having less than 10% body fat. Use the Body Fat % calculator for a more accurate picture if you have significant muscle mass.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">What's the difference between BMR and TDEE?</button><div class="faq-a">BMR (Basal Metabolic Rate) is the calories your body burns at complete rest — just to keep your organs running. TDEE (Total Daily Energy Expenditure) is BMR multiplied by your activity level. It represents total daily calorie burn including exercise and daily movement. You should base your weight loss calorie target on TDEE, not BMR.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">How much protein do I really need on a diet?</button><div class="faq-a">Research consistently shows 0.7–1g of protein per pound of body weight (or 1.6–2.2g/kg) is optimal for preserving muscle during a calorie deficit. Protein also has the highest thermic effect of food — your body burns 25–30% of protein calories just digesting it. Prioritize protein above all other macros when cutting.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFAQ(this)">Are these calculators accurate?</button><div class="faq-a">These tools use peer-reviewed formulas (Mifflin-St Jeor for TDEE/BMR, US Navy method for body fat, Devine/Robinson/Miller/Hamwi for ideal weight). However, individual results vary due to genetics, hormonal factors, and measurement accuracy. Treat the results as a starting point — track your actual progress over 2–4 weeks and adjust accordingly.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <strong>WeightLossCalc.com</strong> — Free Science-Backed Weight Loss Tools<br>
+    <div class="disclaimer">⚠️ For informational purposes only. These calculators are not a substitute for professional medical advice. Consult a physician or registered dietitian before starting any weight loss program, especially if you have existing health conditions.</div>
+    <div style="margin-top:12px">
+      <a href="#">Privacy Policy</a> · <a href="#">Terms</a> · <a href="#">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ── Utilities ─────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const numVal = id => parseFloat($(id)?.value) || 0;
+const strVal = id => $(id)?.value || '';
+
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  $(name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function setUnit(prefix, mode, btn) {
+  btn.parentElement.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll(`.${prefix}-imperial`).forEach(el => el.style.display = mode === 'imperial' ? '' : 'none');
+  document.querySelectorAll(`.${prefix}-metric`).forEach(el => el.style.display = mode === 'metric' ? '' : 'none');
+}
+
+function showResults(id) {
+  const el = $(id);
+  el.classList.add('show');
+  el.style.display = 'block';
+}
+
+// ── TDEE ──────────────────────────────────────────────────────
+function calcTDEE() {
+  const age = numVal('tdee-age');
+  const sex = strVal('tdee-sex');
+  const act = parseFloat(strVal('tdee-activity'));
+
+  // detect unit mode
+  const imperial = document.querySelector('.tdee-imperial').style.display !== 'none';
+  let weightKg, heightCm;
+  if (imperial) {
+    weightKg = numVal('tdee-weight-lb') * 0.453592;
+    heightCm = numVal('tdee-height-ft') * 30.48;
+  } else {
+    weightKg = numVal('tdee-weight-kg');
+    heightCm = numVal('tdee-height-cm');
+  }
+
+  if (!age || !weightKg || !heightCm) { alert('Please fill in all fields.'); return; }
+
+  // Mifflin-St Jeor
+  const bmrMS = sex === 'male'
+    ? 10 * weightKg + 6.25 * heightCm - 5 * age + 5
+    : 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+
+  // Harris-Benedict (revised Roza & Shizgal 1984)
+  const bmrHB = sex === 'male'
+    ? 88.362 + 13.397 * weightKg + 4.799 * heightCm - 5.677 * age
+    : 447.593 + 9.247 * weightKg + 3.098 * heightCm - 4.330 * age;
+
+  const tdee = Math.round(bmrMS * act);
+
+  $('r-bmr').textContent   = Math.round(bmrMS);
+  $('r-tdee').textContent  = tdee;
+  $('r-mild').textContent  = tdee - 250;
+  $('r-mod').textContent   = tdee - 500;
+  $('r-agg').textContent   = tdee - 750;
+  $('r-max').textContent   = tdee - 1000;
+
+  // Both formulas
+  const bf = document.getElementById('both-formulas');
+  bf.innerHTML = `
+    <div class="result-box"><span class="result-label">Mifflin-St Jeor TDEE</span><div class="result-value">${Math.round(bmrMS * act)}</div><div class="result-unit">recommended formula</div></div>
+    <div class="result-box"><span class="result-label">Harris-Benedict TDEE</span><div class="result-value">${Math.round(bmrHB * act)}</div><div class="result-unit">classic formula</div></div>
+    <div class="result-box"><span class="result-label">Average</span><div class="result-value">${Math.round(((bmrMS + bmrHB) / 2) * act)}</div><div class="result-unit">±5% individual variance</div></div>
+  `;
+
+  // Insight
+  const minSafe = sex === 'male' ? 1500 : 1200;
+  let insight = '';
+  if (tdee - 500 < minSafe) {
+    insight = `<strong>⚠️ Warning:</strong> A 500-calorie deficit drops you below ${minSafe} cal/day, which is the minimum recommended for your sex. Stick to a mild 250-calorie deficit to stay safe.`;
+    $('tdee-insight').className = 'insight warn';
+  } else if (act == 1.2) {
+    insight = `<strong>💡 Tip:</strong> You're sedentary. Even a 20-min daily walk (adding ~150 cal burn) would meaningfully speed up your results without changing your diet.`;
+    $('tdee-insight').className = 'insight';
+  } else {
+    insight = `<strong>✓ Recommended:</strong> A ${tdee - 500}-calorie daily target (500 deficit) should result in ~1 lb/week fat loss. Track for 2–3 weeks and adjust if needed.`;
+    $('tdee-insight').className = 'insight success';
+  }
+  $('tdee-insight').innerHTML = insight;
+
+  showResults('tdee-results');
+}
+
+// ── BMI ──────────────────────────────────────────────────────
+function calcBMI() {
+  const imperial = document.querySelector('.bmi-imperial').style.display !== 'none';
+  let weightKg, heightM, weightLb;
+  if (imperial) {
+    weightLb = numVal('bmi-weight-lb');
+    weightKg = weightLb * 0.453592;
+    heightM = numVal('bmi-height-ft') * 0.3048;
+  } else {
+    weightKg = numVal('bmi-weight-kg');
+    weightLb = weightKg * 2.20462;
+    heightM = numVal('bmi-height-cm') / 100;
+  }
+
+  if (!weightKg || !heightM) { alert('Please fill in all fields.'); return; }
+
+  const bmi = weightKg / (heightM * heightM);
+  const bmiR = Math.round(bmi * 10) / 10;
+
+  // Healthy weight range
+  const loKg = 18.5 * heightM * heightM;
+  const hiKg = 24.9 * heightM * heightM;
+  const loLb = loKg * 2.20462;
+  const hiLb = hiKg * 2.20462;
+
+  let cat, color;
+  if (bmi < 18.5)      { cat = 'Underweight'; color = '#1565c0'; }
+  else if (bmi < 25)   { cat = 'Normal Weight ✓'; color = '#2e7d32'; }
+  else if (bmi < 30)   { cat = 'Overweight'; color = '#f57c00'; }
+  else if (bmi < 35)   { cat = 'Obese (Class I)'; color = '#e53935'; }
+  else if (bmi < 40)   { cat = 'Obese (Class II)'; color = '#c62828'; }
+  else                  { cat = 'Obese (Class III)'; color = '#b71c1c'; }
+
+  $('r-bmi').textContent = bmiR;
+  $('r-bmi-cat').textContent = cat;
+  $('r-bmi-cat').style.color = color;
+
+  if (imperial) {
+    $('r-bmi-range').textContent = `${loLb.toFixed(1)} – ${hiLb.toFixed(1)}`;
+    $('r-bmi-range-unit').textContent = 'lbs (healthy range)';
+    const diff = weightLb - (loLb + hiLb) / 2;
+    $('r-bmi-diff').textContent = Math.abs(diff).toFixed(1);
+    $('r-bmi-diff-unit').textContent = diff > 0 ? 'lbs above midpoint' : 'lbs below midpoint';
+  } else {
+    $('r-bmi-range').textContent = `${loKg.toFixed(1)} – ${hiKg.toFixed(1)}`;
+    $('r-bmi-range-unit').textContent = 'kg (healthy range)';
+    const diff = weightKg - (loKg + hiKg) / 2;
+    $('r-bmi-diff').textContent = Math.abs(diff).toFixed(1);
+    $('r-bmi-diff-unit').textContent = diff > 0 ? 'kg above midpoint' : 'kg below midpoint';
+  }
+
+  // Gauge: BMI 10–50 → 0–100%
+  const pct = Math.min(100, Math.max(0, (bmi - 10) / 40 * 100));
+  $('bmi-marker').style.left = pct + '%';
+  $('bmi-cat-text').textContent = cat;
+  $('bmi-cat-text').style.color = color;
+
+  // Insight
+  const age = numVal('bmi-age');
+  const sex = strVal('bmi-sex');
+  let insight = '';
+  if (bmi < 18.5) {
+    insight = `<strong>⚠️ Underweight:</strong> Gaining weight healthily means focusing on protein-rich foods and strength training, not just eating more calories.`;
+    $('bmi-insight').className = 'insight warn';
+  } else if (bmi < 25) {
+    insight = `<strong>✅ Healthy Range:</strong> Your BMI is within the healthy range. Maintain with regular activity and a balanced diet.`;
+    $('bmi-insight').className = 'insight success';
+  } else {
+    const toLose = imperial ? (weightLb - hiLb).toFixed(1) + ' lbs' : (weightKg - hiKg).toFixed(1) + ' kg';
+    insight = `<strong>Note:</strong> To reach a healthy BMI, you'd need to lose approximately <strong>${toLose}</strong>. At 1 lb/week, that's about ${Math.ceil((weightLb - hiLb)).toFixed(0)} weeks. Use the Timeline tab for a personalized schedule.`;
+    $('bmi-insight').className = 'insight';
+  }
+  $('bmi-insight').innerHTML = insight;
+
+  showResults('bmi-results');
+}
+
+// ── TIMELINE ─────────────────────────────────────────────────
+let tlChart = null;
+function calcTimeline() {
+  const imperial = document.querySelector('.tab-btn.active') !== null;
+  const current = numVal('tl-current');
+  const goal = numVal('tl-goal');
+  const deficit = numVal('tl-deficit');
+  const plateau = strVal('tl-plateau');
+  const isMetric = document.querySelector('#tl .unit-btn.active')?.textContent === 'kg';
+
+  if (!current || !goal || !deficit) { alert('Please fill all fields.'); return; }
+  if (goal >= current) { alert('Goal weight must be less than current weight.'); return; }
+
+  const unit = isMetric ? 'kg' : 'lbs';
+  const calPerUnit = isMetric ? 7700 : 3500; // calories per kg vs per lb
+  const totalToLose = current - goal;
+  const simpleWeeks = (totalToLose * calPerUnit) / (deficit * 7);
+
+  // Build weekly projection with optional plateau modeling
+  let labels = [], weights = [], weeks = 0;
+  let w = current;
+  const plateauFactor = plateau === 'yes' ? 0.88 : 1; // metabolic adaptation ~12% slowdown over time
+
+  while (w > goal && weeks < 300) {
+    labels.push(`Wk ${weeks}`);
+    weights.push(parseFloat(w.toFixed(1)));
+    const adaptation = plateau === 'yes' ? Math.max(0.7, plateauFactor - weeks * 0.001) : 1;
+    const weeklyLoss = (deficit * 7 * adaptation) / calPerUnit;
+    w = Math.max(goal, w - weeklyLoss);
+    weeks++;
+  }
+  labels.push(`Wk ${weeks}`);
+  weights.push(goal);
+
+  $('r-tl-weeks').textContent = weeks;
+  $('r-tl-total').textContent = totalToLose.toFixed(1);
+  $('r-tl-unit').textContent = unit;
+  $('r-tl-rate').textContent = (totalToLose / weeks).toFixed(2);
+  $('r-tl-rate-unit').textContent = unit + '/week';
+
+  // Goal date
+  const goalDate = new Date();
+  goalDate.setDate(goalDate.getDate() + weeks * 7);
+  $('r-tl-date').textContent = goalDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  // Insight
+  let insight = '';
+  if (deficit > 1000) {
+    insight = `<strong>⚠️ Very aggressive deficit:</strong> A ${deficit}-cal/day deficit may cause muscle loss and fatigue. Consider 500–750 cal/day for sustainable results.`;
+    $('tl-insight').className = 'insight warn';
+  } else if (weeks < 4) {
+    insight = `<strong>✅ Quick goal!</strong> You're close to your target. Consistency is key — even 2–3 weeks of tracking makes a huge difference.`;
+    $('tl-insight').className = 'insight success';
+  } else {
+    const simpleMonths = (simpleWeeks / 4.33).toFixed(1);
+    const realisticExtra = plateau === 'yes' ? ` With plateau modeling, add ~${Math.round(weeks - simpleWeeks)} extra weeks.` : '';
+    insight = `<strong>📅 Realistic timeline:</strong> Simple math predicts ${simpleMonths} months.${realisticExtra} Remember: some weeks you'll lose more, others less. Zoom out and trust the trend, not daily fluctuations.`;
+    $('tl-insight').className = 'insight';
+  }
+  $('tl-insight').innerHTML = insight;
+
+  // Chart
+  if (tlChart) tlChart.destroy();
+  const canvas = $('tl-chart');
+  // Sample every N weeks to keep chart readable
+  const step = Math.max(1, Math.floor(weeks / 52));
+  const sampLabels = labels.filter((_, i) => i % step === 0);
+  const sampWeights = weights.filter((_, i) => i % step === 0);
+
+  tlChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: sampLabels,
+      datasets: [{
+        label: `Weight (${unit})`,
+        data: sampWeights,
+        borderColor: '#2e7d32',
+        backgroundColor: 'rgba(46,125,50,.08)',
+        borderWidth: 2.5,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.y.toFixed(1)} ${unit}` } } },
+      scales: {
+        y: { title: { display: true, text: `Weight (${unit})` }, reverse: false },
+        x: { title: { display: true, text: 'Timeline' }, ticks: { maxTicksLimit: 12 } }
+      }
+    }
+  });
+
+  showResults('tl-results');
+}
+
+// ── MACROS ────────────────────────────────────────────────────
+let macroChart = null;
+const DIETS = {
+  standard:    { p: 0.30, c: 0.40, f: 0.30 },
+  highprotein: { p: 0.40, c: 0.20, f: 0.40 },
+  lowcarb:     { p: 0.40, c: 0.10, f: 0.50 },
+  keto:        { p: 0.30, c: 0.05, f: 0.65 },
+  lowfat:      { p: 0.35, c: 0.50, f: 0.15 },
+};
+
+function calcMacros() {
+  const cals = numVal('macro-cals');
+  const weight = numVal('macro-weight');
+  const diet = strVal('macro-diet');
+  if (!cals) { alert('Enter your daily calorie target.'); return; }
+
+  const split = DIETS[diet];
+  const proteinCal = cals * split.p;
+  const carbCal    = cals * split.c;
+  const fatCal     = cals * split.f;
+  const proteinG   = Math.round(proteinCal / 4);
+  const carbG      = Math.round(carbCal / 4);
+  const fatG       = Math.round(fatCal / 9);
+
+  // Protein floor check
+  const minProtein = weight ? Math.round(weight * 0.7) : null;
+  const proteinOK = !minProtein || proteinG >= minProtein;
+
+  // Legend
+  const legend = $('macro-legend');
+  legend.innerHTML = `
+    <div class="macro-item"><div class="macro-dot" style="background:#2e7d32"></div><div><div class="macro-name">Protein</div><div class="macro-sub">${proteinG}g · ${Math.round(proteinCal)} cal · ${Math.round(split.p*100)}%</div></div></div>
+    <div class="macro-item"><div class="macro-dot" style="background:#42a5f5"></div><div><div class="macro-name">Carbs</div><div class="macro-sub">${carbG}g · ${Math.round(carbCal)} cal · ${Math.round(split.c*100)}%</div></div></div>
+    <div class="macro-item"><div class="macro-dot" style="background:#ffca28"></div><div><div class="macro-name">Fat</div><div class="macro-sub">${fatG}g · ${Math.round(fatCal)} cal · ${Math.round(split.f*100)}%</div></div></div>
+  `;
+
+  // Boxes
+  $('macro-boxes').innerHTML = `
+    <div class="result-box highlight"><span class="result-label">Protein</span><div class="result-value">${proteinG}g</div><div class="result-unit">${Math.round(proteinCal)} cal</div></div>
+    <div class="result-box"><span class="result-label">Carbs</span><div class="result-value">${carbG}g</div><div class="result-unit">${Math.round(carbCal)} cal</div></div>
+    <div class="result-box"><span class="result-label">Fat</span><div class="result-value">${fatG}g</div><div class="result-unit">${Math.round(fatCal)} cal</div></div>
+  `;
+
+  // Insight
+  let insight = '';
+  if (!proteinOK) {
+    insight = `<strong>⚠️ Low Protein Warning:</strong> Your current split gives ${proteinG}g protein, but we recommend at least ${minProtein}g (0.7g × ${weight}lbs) to preserve muscle during a deficit. Consider the "High Protein" diet preset.`;
+    $('macro-insight').className = 'insight warn';
+  } else if (diet === 'keto') {
+    insight = `<strong>🥑 Keto mode:</strong> Under 50g carbs triggers ketosis. Give it 2–4 weeks for adaptation. Monitor electrolytes (sodium, potassium, magnesium).`;
+    $('macro-insight').className = 'insight';
+  } else {
+    insight = `<strong>✅ Good split:</strong> ${proteinG}g protein${minProtein ? ` exceeds your ${minProtein}g floor` : ''} — muscle preservation is covered. Adjust carbs/fats based on energy and satiety.`;
+    $('macro-insight').className = 'insight success';
+  }
+  $('macro-insight').innerHTML = insight;
+
+  // Donut chart
+  if (macroChart) macroChart.destroy();
+  macroChart = new Chart($('macro-chart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Protein', 'Carbs', 'Fat'],
+      datasets: [{ data: [proteinCal, carbCal, fatCal], backgroundColor: ['#2e7d32','#42a5f5','#ffca28'], borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { display: false } }, cutout: '65%', responsive: true, maintainAspectRatio: true }
+  });
+
+  showResults('macro-results');
+}
+
+// ── BODY FAT ─────────────────────────────────────────────────
+function updateBFForm() {
+  const sex = strVal('bf-sex');
+  $('bf-hip-group').style.display = sex === 'female' ? '' : 'none';
+}
+updateBFForm();
+
+function calcBodyFat() {
+  const sex = strVal('bf-sex');
+  const metric = document.querySelector('#bodyfat .unit-btn.active')?.textContent?.includes('cm');
+  let height = numVal('bf-height');
+  let neck = numVal('bf-neck');
+  let waist = numVal('bf-waist');
+  let hip = numVal('bf-hip');
+
+  if (!height || !neck || !waist || (sex === 'female' && !hip)) { alert('Please fill in all measurements.'); return; }
+
+  if (!metric) { height *= 2.54; neck *= 2.54; waist *= 2.54; hip *= 2.54; } // → cm
+
+  // US Navy method (uses cm)
+  let bf;
+  if (sex === 'male') {
+    bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+  } else {
+    bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+  }
+  bf = Math.max(2, Math.round(bf * 10) / 10);
+
+  // Categories
+  let cat, cls = 'insight';
+  if (sex === 'male') {
+    if (bf < 6)       { cat = 'Essential Fat'; cls = 'insight warn'; }
+    else if (bf < 14) { cat = 'Athlete ✓'; cls = 'insight success'; }
+    else if (bf < 18) { cat = 'Fitness ✓'; cls = 'insight success'; }
+    else if (bf < 25) { cat = 'Average'; }
+    else              { cat = 'Obese'; cls = 'insight warn'; }
+  } else {
+    if (bf < 14)      { cat = 'Essential Fat'; cls = 'insight warn'; }
+    else if (bf < 21) { cat = 'Athlete ✓'; cls = 'insight success'; }
+    else if (bf < 25) { cat = 'Fitness ✓'; cls = 'insight success'; }
+    else if (bf < 32) { cat = 'Average'; }
+    else              { cat = 'Obese'; cls = 'insight warn'; }
+  }
+
+  // Need body weight for fat/lean mass
+  // We'll estimate from BMI if no weight given — just show %
+  $('r-bf').textContent = bf + '%';
+  $('r-bf-cat').textContent = cat;
+
+  // If we can derive weight from measurements (skip for now — just show % and offer to use with TDEE)
+  $('r-bf-fat').textContent = '—';
+  $('r-bf-lean').textContent = '—';
+  $('r-bf-fat-u').textContent = 'Enter weight in TDEE tab';
+  $('r-bf-lean-u').textContent = '';
+
+  $('bf-insight').className = cls;
+  $('bf-insight').innerHTML = `<strong>${cat}:</strong> Your estimated body fat is <strong>${bf}%</strong>. For a more precise reading, use DEXA scan (gold standard) or hydrostatic weighing. The Navy method has ±3–4% accuracy.`;
+
+  showResults('bf-results');
+}
+
+// ── IDEAL WEIGHT ─────────────────────────────────────────────
+function calcIdealWeight() {
+  const sex = strVal('iw-sex');
+  const metric = document.querySelector('#idealweight .unit-btn.active')?.textContent?.includes('Metric');
+  let heightCm;
+  if (!metric) {
+    heightCm = numVal('iw-height-ft') * 30.48;
+  } else {
+    heightCm = numVal('iw-height-cm');
+  }
+  const current = numVal('iw-current');
+
+  if (!heightCm) { alert('Enter your height.'); return; }
+
+  const heightIn = heightCm / 2.54;
+  const inchOver5ft = Math.max(0, heightIn - 60);
+
+  // All formulas in kg
+  const formulas = {
+    'Devine (1974)':   sex === 'male' ? 50   + 2.3  * inchOver5ft : 45.5 + 2.3  * inchOver5ft,
+    'Robinson (1983)': sex === 'male' ? 52   + 1.9  * inchOver5ft : 49   + 1.7  * inchOver5ft,
+    'Miller (1983)':   sex === 'male' ? 56.2 + 1.41 * inchOver5ft : 53.1 + 1.36 * inchOver5ft,
+    'Hamwi (1964)':    sex === 'male' ? 48   + 2.7  * inchOver5ft : 45.4 + 2.27 * inchOver5ft,
+  };
+
+  const vals = Object.values(formulas);
+  const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
+
+  const toDisplay = kg => metric ? kg.toFixed(1) + ' kg' : (kg * 2.20462).toFixed(1) + ' lbs';
+
+  let html = '';
+  Object.entries(formulas).forEach(([name, kg]) => {
+    html += `<div class="result-box"><span class="result-label">${name}</span><div class="result-value" style="font-size:1.15rem">${toDisplay(kg)}</div></div>`;
+  });
+  html += `<div class="result-box highlight"><span class="result-label">Average</span><div class="result-value">${toDisplay(avg)}</div></div>`;
+  $('iw-boxes').innerHTML = html;
+
+  let insight = '';
+  if (current) {
+    const currentKg = metric ? current : current * 0.453592;
+    const diffKg = currentKg - avg;
+    const diffStr = metric ? Math.abs(diffKg).toFixed(1) + ' kg' : (Math.abs(diffKg) * 2.20462).toFixed(1) + ' lbs';
+    if (Math.abs(diffKg) < 2) {
+      insight = `<strong>✅ Great news!</strong> You're very close to your ideal weight average. Focus on body composition (muscle vs. fat) rather than the number.`;
+      $('iw-insight').className = 'insight success';
+    } else if (diffKg > 0) {
+      insight = `<strong>Target:</strong> You're approximately <strong>${diffStr}</strong> above the formula average. These are estimates — real ideal weight depends on your muscle mass and bone structure.`;
+      $('iw-insight').className = 'insight';
+    } else {
+      insight = `<strong>Note:</strong> You're <strong>${diffStr}</strong> below the formula average. These formulas don't account for modern body composition standards — consult a healthcare provider.`;
+      $('iw-insight').className = 'insight warn';
+    }
+  } else {
+    insight = `<strong>💡 Note:</strong> These formulas are based on height alone and don't account for muscle mass. They're best used as a general reference, not a strict target.`;
+    $('iw-insight').className = 'insight';
+  }
+  $('iw-insight').innerHTML = insight;
+
+  showResults('iw-results');
+}
+
+// ── EXERCISE ─────────────────────────────────────────────────
+const EXERCISES = [
+  { name: 'Running (5 mph)',       met: 8.3,  cat: 'Cardio' },
+  { name: 'Running (7 mph)',       met: 11.5, cat: 'Cardio' },
+  { name: 'Running (9 mph)',       met: 14.5, cat: 'Cardio' },
+  { name: 'Walking (3 mph)',       met: 3.5,  cat: 'Low Impact' },
+  { name: 'Walking (4 mph, brisk)',met: 4.3,  cat: 'Low Impact' },
+  { name: 'Cycling (moderate)',    met: 8.0,  cat: 'Cardio' },
+  { name: 'Cycling (vigorous)',    met: 12.0, cat: 'Cardio' },
+  { name: 'Swimming (freestyle)',  met: 8.3,  cat: 'Cardio' },
+  { name: 'Elliptical',           met: 5.0,  cat: 'Cardio' },
+  { name: 'Rowing (vigorous)',     met: 8.5,  cat: 'Cardio' },
+  { name: 'Jump rope',            met: 11.8, cat: 'Cardio' },
+  { name: 'HIIT',                 met: 10.0, cat: 'High Intensity' },
+  { name: 'Weight Lifting',       met: 5.0,  cat: 'Strength' },
+  { name: 'Yoga',                 met: 2.5,  cat: 'Flexibility' },
+  { name: 'Pilates',              met: 3.0,  cat: 'Flexibility' },
+  { name: 'Basketball',           met: 8.0,  cat: 'Sport' },
+  { name: 'Soccer',               met: 10.0, cat: 'Sport' },
+  { name: 'Tennis',               met: 7.3,  cat: 'Sport' },
+  { name: 'Dancing',              met: 4.8,  cat: 'Fun' },
+  { name: 'Hiking',               met: 6.0,  cat: 'Outdoor' },
+];
+
+function calcExercise() {
+  const weightLb = numVal('ex-weight');
+  const mins = numVal('ex-duration');
+  if (!weightLb || !mins) { alert('Enter your weight and duration.'); return; }
+
+  const weightKg = weightLb * 0.453592;
+  let rows = '';
+  EXERCISES.forEach(e => {
+    const cal = Math.round(e.met * weightKg * mins / 60);
+    rows += `<tr><td>${e.name}</td><td>${e.cat}</td><td class="cal">${cal} cal</td></tr>`;
+  });
+  $('ex-body').innerHTML = rows;
+  showResults('ex-results');
+}
+
+// ── PLATEAU ───────────────────────────────────────────────────
+function calcPlateau() {
+  const weeks = numVal('p-weeks');
+  const lost  = numVal('p-lost');
+  const intake = numVal('p-intake');
+  const original = numVal('p-original');
+
+  if (!weeks || !intake) { alert('Fill in at least weeks and current intake.'); return; }
+
+  let score = 0;
+  let advice = '';
+
+  // Risk factors
+  if (weeks >= 8)   score += 3;
+  else if (weeks >= 4) score += 1;
+
+  const pctLost = original ? (lost / original * 100) : 0;
+  if (pctLost >= 10) score += 2;
+  else if (pctLost >= 5) score += 1;
+
+  if (intake < 1400) score += 3;
+  else if (intake < 1600) score += 1;
+
+  const expectedLoss = weeks * (intake > 0 ? 0.5 : 0); // rough
+  if (lost < expectedLoss * 0.6) score += 2;
+
+  let risk, cls;
+  if (score >= 6)      { risk = 'High — Likely Plateau'; cls = 'danger'; }
+  else if (score >= 3) { risk = 'Moderate — Watch Closely'; cls = 'warning'; }
+  else                 { risk = 'Low — Keep Going'; cls = ''; }
+
+  $('r-p-score').textContent = risk;
+  $('p-score-box').className = 'result-box ' + cls;
+
+  let html = '';
+  if (score >= 4) {
+    html += `<div class="insight warn"><strong>🚨 You're likely hitting a wall.</strong> After ${weeks} weeks, metabolic adaptation is real. Here's your action plan:</div>`;
+    html += `<div class="insight success" style="margin-top:10px"><strong>Immediate action:</strong> Take a 1–2 week "diet break" at maintenance calories. Studies show this restores leptin sensitivity and often kickstarts loss again.</div>`;
+    html += `<div class="insight" style="margin-top:10px"><strong>Recalculate your TDEE:</strong> You've lost ${lost} lbs — your maintenance is now ~${Math.round(lost * 12)} fewer calories than when you started. Recalculate using the TDEE tab with your current weight.</div>`;
+  } else if (score >= 2) {
+    html += `<div class="insight"><strong>📊 Moderate risk.</strong> Make sure you're tracking accurately — food scale, not measuring cups. Even small measurement errors compound over weeks.</div>`;
+  } else {
+    html += `<div class="insight success"><strong>✅ Looking good.</strong> Stay consistent. Weight loss isn't linear — week-to-week variation of ±2 lbs is completely normal (water, glycogen, hormones).</div>`;
+  }
+
+  $('p-advice').innerHTML = html;
+  showResults('p-results');
+}
+
+// ── TRACKER ───────────────────────────────────────────────────
+let trChart = null;
+const LS_KEY = 'wlc_log';
+
+function getLog() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; }
+}
+function saveLog(log) { localStorage.setItem(LS_KEY, JSON.stringify(log)); }
+
+// Set default date to today
+(function() {
+  const d = new Date();
+  const fmt = d.toISOString().split('T')[0];
+  const el = $('tr-date');
+  if (el) el.value = fmt;
+})();
+
+function addLog() {
+  const date = $('tr-date')?.value;
+  const weight = numVal('tr-weight');
+  const note = $('tr-note')?.value?.trim() || '';
+  if (!date || !weight) { alert('Enter a date and weight.'); return; }
+
+  const log = getLog();
+  const existing = log.findIndex(e => e.date === date);
+  const entry = { date, weight, note };
+  if (existing >= 0) { log[existing] = entry; } else { log.push(entry); }
+  log.sort((a,b) => a.date.localeCompare(b.date));
+  saveLog(log);
+  $('tr-weight').value = '';
+  $('tr-note').value = '';
+  renderTracker();
+}
+
+function deleteLog(date) {
+  const log = getLog().filter(e => e.date !== date);
+  saveLog(log);
+  renderTracker();
+}
+
+function clearLog() {
+  if (confirm('Delete all logged entries? This cannot be undone.')) {
+    localStorage.removeItem(LS_KEY);
+    renderTracker();
+  }
+}
+
+function exportCSV() {
+  const log = getLog();
+  if (!log.length) return;
+  const rows = [['Date','Weight','Note'], ...log.map(e => [e.date, e.weight, e.note])];
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(csv);
+  a.download = 'weight-log.csv';
+  a.click();
+}
+
+function renderTracker() {
+  const log = getLog();
+  const statsEl = $('tr-stats');
+  const emptyEl = $('tr-empty');
+
+  if (!log.length) {
+    statsEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  statsEl.style.display = 'block';
+  emptyEl.style.display = 'none';
+
+  const first = log[0].weight;
+  const last  = log[log.length-1].weight;
+  const min   = Math.min(...log.map(e=>e.weight));
+  const max   = Math.max(...log.map(e=>e.weight));
+  const total = first - last;
+  const avg7  = log.length >= 7 ? (log.slice(-7).reduce((s,e)=>s+e.weight,0)/7).toFixed(1) : '—';
+
+  $('tr-stat-boxes').innerHTML = `
+    <div class="result-box highlight"><span class="result-label">Total Lost</span><div class="result-value">${total.toFixed(1)}</div><div class="result-unit">${total >= 0 ? 'lbs lost 🎉' : 'lbs gained'}</div></div>
+    <div class="result-box"><span class="result-label">Starting Weight</span><div class="result-value" style="font-size:1.2rem">${first}</div></div>
+    <div class="result-box"><span class="result-label">Current Weight</span><div class="result-value" style="font-size:1.2rem">${last}</div></div>
+    <div class="result-box"><span class="result-label">7-Day Average</span><div class="result-value" style="font-size:1.2rem">${avg7}</div></div>
+    <div class="result-box"><span class="result-label">Lowest</span><div class="result-value" style="font-size:1.2rem">${min}</div></div>
+    <div class="result-box"><span class="result-label">Entries</span><div class="result-value" style="font-size:1.2rem">${log.length}</div></div>
+  `;
+
+  // Chart
+  if (trChart) trChart.destroy();
+  trChart = new Chart($('tr-chart'), {
+    type: 'line',
+    data: {
+      labels: log.map(e => e.date),
+      datasets: [
+        {
+          label: 'Weight',
+          data: log.map(e => e.weight),
+          borderColor: '#2e7d32',
+          backgroundColor: 'rgba(46,125,50,.08)',
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: '7-day avg',
+          data: log.map((_, i, arr) => {
+            const window = arr.slice(Math.max(0, i-6), i+1);
+            return window.reduce((s,e)=>s+e.weight,0) / window.length;
+          }),
+          borderColor: '#f57c00',
+          borderWidth: 1.5,
+          borderDash: [5,4],
+          pointRadius: 0,
+          fill: false,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: { y: { title: { display: true, text: 'Weight' } }, x: { ticks: { maxTicksLimit: 10 } } }
+    }
+  });
+
+  // Log entries
+  let logHtml = '';
+  const reversed = [...log].reverse();
+  reversed.forEach((e, i) => {
+    const prev = i < reversed.length-1 ? reversed[i+1] : null;
+    const diff = prev ? e.weight - prev.weight : 0;
+    let changeHtml = '';
+    if (prev) {
+      const sign = diff < 0 ? '▼' : (diff > 0 ? '▲' : '—');
+      const cls = diff < 0 ? 'neg' : (diff > 0 ? 'pos' : 'zero');
+      changeHtml = `<span class="log-change ${cls}">${sign} ${Math.abs(diff).toFixed(1)}</span>`;
+    }
+    logHtml += `<div class="log-entry">
+      <span class="log-date">${e.date}</span>
+      <span class="log-weight">${e.weight} lbs</span>
+      ${changeHtml}
+      <span class="log-note">${e.note}</span>
+      <button class="log-del" onclick="deleteLog('${e.date}')" title="Delete">✕</button>
+    </div>`;
+  });
+  $('tr-log').innerHTML = logHtml;
+}
+
+// Init tracker
+renderTracker();
+
+// ── FAQ ───────────────────────────────────────────────────────
+function toggleFAQ(btn) {
+  const ans = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !isOpen);
+  ans.classList.toggle('open', !isOpen);
+}
+</script>
+</body>
+</html>
