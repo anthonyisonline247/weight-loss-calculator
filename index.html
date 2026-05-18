@@ -76,31 +76,46 @@ header p { margin-top: 10px; font-size: 1rem; opacity: .88; max-width: 620px; ma
 .ad-slot { display: none; }
 
 /* ============================================================
-   NAV TABS
+   NAV TABS — VERTICAL SIDEBAR
    ============================================================ */
-.tabs-wrapper { background: var(--white); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-.tabs { display: flex; overflow-x: auto; gap: 2px; padding: 0 16px; scroll-snap-type: x mandatory; }
-.tabs::-webkit-scrollbar { height: 16px; }
-.tabs::-webkit-scrollbar-track { background: #d0e8d0; border-radius: 8px; }
-.tabs::-webkit-scrollbar-thumb { background: var(--green2); border-radius: 8px; border: 3px solid #d0e8d0; }
-.tabs::-webkit-scrollbar-thumb:hover { background: var(--green); }
-.tab-btn {
+.page-layout { display: flex; align-items: flex-start; }
+.sidebar {
+  width: 210px;
   flex-shrink: 0;
-  padding: 14px 18px;
+  background: var(--white);
+  box-shadow: 2px 0 8px rgba(0,0,0,.06);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+.page-right { flex: 1; min-width: 0; }
+.tabs { display: flex; flex-direction: column; padding: 16px 0; gap: 2px; }
+.tab-btn {
+  width: 100%;
+  padding: 11px 20px 11px 16px;
   border: none;
   background: none;
   font-family: var(--font);
-  font-size: .88rem;
+  font-size: .86rem;
   font-weight: 600;
   color: var(--gray3);
   cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: color .2s, border-color .2s;
+  border-left: 3px solid transparent;
+  text-align: left;
+  transition: color .2s, border-color .2s, background .2s;
   white-space: nowrap;
-  scroll-snap-align: start;
 }
-.tab-btn:hover { color: var(--green); }
-.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+.tab-btn:hover { color: var(--green); background: rgba(46,125,50,.06); }
+.tab-btn.active { color: var(--green); border-left-color: var(--green); background: rgba(46,125,50,.08); }
+@media (max-width: 768px) {
+  .page-layout { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; box-shadow: var(--shadow); }
+  .tabs { flex-direction: row; overflow-x: auto; gap: 0; padding: 0 8px; }
+  .tab-btn { border-left: none; border-bottom: 3px solid transparent; padding: 12px 14px; }
+  .tab-btn.active { border-left-color: transparent; border-bottom-color: var(--green); background: none; }
+}
 
 /* ============================================================
    SECTIONS
@@ -286,23 +301,24 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
   </div>
 </div>
 
-<!-- NAV TABS -->
-<div class="tabs-wrapper">
-  <div class="container">
-    <div class="tabs" role="tablist">
-      <button class="tab-btn active" onclick="showTab('tdee')" role="tab">🔥 TDEE & Calories</button>
-      <button class="tab-btn" onclick="showTab('bmi')" role="tab">📊 BMI</button>
-      <button class="tab-btn" onclick="showTab('timeline')" role="tab">📅 Timeline</button>
-      <button class="tab-btn" onclick="showTab('macros')" role="tab">🥩 Macros</button>
-      <button class="tab-btn" onclick="showTab('bodyfat')" role="tab">📐 Body Fat %</button>
-      <button class="tab-btn" onclick="showTab('idealweight')" role="tab">⚖️ Ideal Weight</button>
-      <button class="tab-btn" onclick="showTab('exercise')" role="tab">🏃 Exercise Burn</button>
-      <button class="tab-btn" onclick="showTab('plateau')" role="tab">📉 Plateau Fix</button>
-      <button class="tab-btn" onclick="showTab('tracker')" role="tab">📝 Tracker</button>
-    </div>
-  </div>
-</div>
+<!-- PAGE LAYOUT: vertical sidebar nav + content -->
+<div class="page-layout">
 
+<nav class="sidebar">
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" onclick="showTab('tdee')" role="tab">🔥 TDEE & Calories</button>
+    <button class="tab-btn" onclick="showTab('bmi')" role="tab">📊 BMI</button>
+    <button class="tab-btn" onclick="showTab('timeline')" role="tab">📅 Timeline</button>
+    <button class="tab-btn" onclick="showTab('macros')" role="tab">🥩 Macros</button>
+    <button class="tab-btn" onclick="showTab('bodyfat')" role="tab">📐 Body Fat %</button>
+    <button class="tab-btn" onclick="showTab('idealweight')" role="tab">⚖️ Ideal Weight</button>
+    <button class="tab-btn" onclick="showTab('exercise')" role="tab">🏃 Exercise Burn</button>
+    <button class="tab-btn" onclick="showTab('plateau')" role="tab">📉 Plateau Fix</button>
+    <button class="tab-btn" onclick="showTab('tracker')" role="tab">📝 Tracker</button>
+  </div>
+</nav>
+
+<div class="page-right">
 <!-- MAIN CONTENT -->
 <main class="container">
 
@@ -908,6 +924,8 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
 </section>
 
 </main>
+</div><!-- /.page-right -->
+</div><!-- /.page-layout -->
 
 <!-- AD SLOT BOTTOM -->
 <div class="container">
