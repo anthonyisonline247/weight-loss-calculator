@@ -68,7 +68,8 @@ header {
 header h1 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -.5px; }
 header p { margin-top: 10px; font-size: 1rem; opacity: .88; max-width: 620px; margin-inline: auto; }
 .badge-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
-.badge { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.30); border-radius: 20px; padding: 4px 14px; font-size: .82rem; font-weight: 600; }
+.badge { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.30); border-radius: 20px; padding: 6px 16px; font-size: .82rem; font-weight: 600; cursor: pointer; color: var(--white); font-family: var(--font); transition: background .2s, transform .15s, box-shadow .15s; }
+.badge:hover { background: rgba(255,255,255,.32); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
 
 /* ============================================================
    AD SLOTS
@@ -281,12 +282,15 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
     <h1>🥗 Weight Loss Calculator Suite</h1>
     <p>9 science-backed tools in one place — calculate calories, macros, body fat, and track your real progress.</p>
     <div class="badge-row">
-      <span class="badge">✓ TDEE</span>
-      <span class="badge">✓ BMI</span>
-      <span class="badge">✓ Macros</span>
-      <span class="badge">✓ Body Fat %</span>
-      <span class="badge">✓ Plateau Predictor</span>
-      <span class="badge">✓ Progress Tracker</span>
+      <button class="badge" onclick="navigateTo('tdee')">🔥 TDEE & Calories</button>
+      <button class="badge" onclick="navigateTo('bmi')">📊 BMI</button>
+      <button class="badge" onclick="navigateTo('timeline')">📅 Timeline</button>
+      <button class="badge" onclick="navigateTo('macros')">🥩 Macros</button>
+      <button class="badge" onclick="navigateTo('bodyfat')">📐 Body Fat %</button>
+      <button class="badge" onclick="navigateTo('idealweight')">⚖️ Ideal Weight</button>
+      <button class="badge" onclick="navigateTo('exercise')">🏃 Exercise Burn</button>
+      <button class="badge" onclick="navigateTo('plateau')">📉 Plateau Fix</button>
+      <button class="badge" onclick="navigateTo('tracker')">📝 Tracker</button>
     </div>
   </div>
 </header>
@@ -598,6 +602,16 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       </div>
     </div>
   </div>
+
+  <div class="card">
+    <h2>📖 The Science Behind Weight Loss Timelines</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">The classic rule is <strong>3,500 calories = 1 lb of fat</strong>. So a 500 cal/day deficit should produce ~1 lb/week. In practice, early weeks often show faster loss — that's mostly water and glycogen, not fat.</p>
+      <div class="insight" style="margin-bottom:12px"><strong>Why do plateaus happen?</strong> As you lose weight, your body is lighter and burns fewer calories. It also reduces NEAT (Non-Exercise Activity Thermogenesis — fidgeting, posture, daily movement) by up to 300 cal/day. This is called <em>adaptive thermogenesis</em>.</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>The 0.5–1 lb/week rule:</strong> This pace is considered optimal for fat loss while preserving lean muscle. Faster rates (>2 lbs/week) risk muscle catabolism and nutrient deficiency.</div>
+      <div class="insight warn"><strong>Timeline math vs. reality:</strong> Real weight loss looks like a jagged line, not a smooth curve. Hormones, sodium intake, and menstrual cycles can shift scale weight by 2–5 lbs overnight. Focus on the 4-week trend, not daily numbers.</div>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -780,6 +794,16 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       <div id="iw-insight" class="insight" style="margin-top:16px"></div>
     </div>
   </div>
+
+  <div class="card">
+    <h2>📖 Understanding Ideal Weight Formulas</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">All four formulas were developed between 1964 and 1983 for clinical drug dosing — not as fitness targets. They estimate a weight range based purely on height and sex, with no adjustment for age, muscle mass, or bone density.</p>
+      <div class="insight" style="margin-bottom:12px"><strong>Devine Formula (1974):</strong> Originally designed for kidney dialysis dosing. Still the most widely cited in clinical literature despite its age.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Why they diverge:</strong> Each was derived from a different patient population. The formulas can differ by 5–10 lbs for the same height — which is why averaging all four gives a more balanced estimate.</div>
+      <div class="insight warn"><strong>Limitation:</strong> A muscular athlete at 200 lbs and 5'10" may be "overweight" by these formulas yet perfectly healthy. Body fat % is a far better metric for fit individuals. Use the Body Fat tab for a more complete picture.</div>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -810,6 +834,16 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       <div class="insight" style="margin-top:16px">
         <strong>💡 Pro tip:</strong> Cardio burns calories during exercise; strength training burns calories for up to 48 hours after. Combine both for best results.
       </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📖 How MET Values & Calorie Burn Work</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">This calculator uses <strong>MET (Metabolic Equivalent of Task)</strong> values from the Compendium of Physical Activities. A MET of 1 = energy burned at rest. Running at 7 mph (MET 11.5) burns 11.5× your resting rate.</p>
+      <div class="insight" style="margin-bottom:12px"><strong>The formula:</strong> Calories = MET × body weight (kg) × duration (hours). Heavier people burn more calories for the same activity — this is why weight is required.</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>Cardio vs. Strength:</strong> Cardio yields higher immediate calorie burn. Strength training builds muscle, which raises your resting metabolic rate permanently — burning more calories even while you sleep.</div>
+      <div class="insight warn"><strong>Don't eat back all exercise calories:</strong> Fitness trackers overestimate burn by 30–70%. Use exercise burn estimates as a bonus, not as justification to eat back the full number. Aim to keep your food deficit consistent regardless of exercise output.</div>
     </div>
   </div>
 </section>
@@ -921,6 +955,16 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       Log your first weight entry to start tracking!
     </div>
   </div>
+
+  <div class="card">
+    <h2>📖 Why Tracking Your Weight Works</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">Research consistently shows that people who self-monitor their weight lose significantly more than those who don't. A 2019 meta-analysis found daily weighers lost an average of <strong>6.6 lbs more</strong> over 12 months than non-weighers.</p>
+      <div class="insight" style="margin-bottom:12px"><strong>Best time to weigh in:</strong> First thing in the morning, after using the bathroom and before eating. This minimizes daily variation from food and water weight. Use the same scale in the same spot each time.</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>Watch the trend, not the number:</strong> Daily weight fluctuates 1–5 lbs due to water retention, sodium, hormones, and digestion. The 7-day moving average (shown in the chart above) is your real signal — ignore day-to-day noise.</div>
+      <div class="insight warn"><strong>Scale anxiety is common:</strong> If daily weigh-ins cause stress, switch to 2–3 times per week. The consistency matters more than the frequency. Even weekly tracking is far better than none at all.</div>
+    </div>
+  </div>
 </section>
 
 </main>
@@ -970,11 +1014,19 @@ const $ = id => document.getElementById(id);
 const numVal = id => parseFloat($(id)?.value) || 0;
 const strVal = id => $(id)?.value || '';
 
-function showTab(name) {
+function navigateTo(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   $(name).classList.add('active');
-  event.currentTarget.classList.add('active');
+  const btn = document.querySelector(`.tab-btn[onclick*="'${name}'"]`);
+  if (btn) btn.classList.add('active');
+  // Scroll top of content into view on mobile
+  const sec = $(name);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showTab(name) {
+  navigateTo(name);
 }
 
 function setUnit(prefix, mode, btn) {
