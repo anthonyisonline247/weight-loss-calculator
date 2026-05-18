@@ -291,6 +291,9 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       <button class="badge" onclick="navigateTo('exercise')">🏃 Exercise Burn</button>
       <button class="badge" onclick="navigateTo('plateau')">📉 Plateau Fix</button>
       <button class="badge" onclick="navigateTo('tracker')">📝 Tracker</button>
+      <button class="badge" onclick="navigateTo('water')">💧 Water Intake</button>
+      <button class="badge" onclick="navigateTo('onerm')">💪 1RM Strength</button>
+      <button class="badge" onclick="navigateTo('fasting')">⏱️ Intermittent Fasting</button>
     </div>
   </div>
 </header>
@@ -319,6 +322,9 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
     <button class="tab-btn" onclick="showTab('exercise')" role="tab">🏃 Exercise Burn</button>
     <button class="tab-btn" onclick="showTab('plateau')" role="tab">📉 Plateau Fix</button>
     <button class="tab-btn" onclick="showTab('tracker')" role="tab">📝 Tracker</button>
+    <button class="tab-btn" onclick="showTab('water')" role="tab">💧 Water Intake</button>
+    <button class="tab-btn" onclick="showTab('onerm')" role="tab">💪 1RM Strength</button>
+    <button class="tab-btn" onclick="showTab('fasting')" role="tab">⏱️ IF Calculator</button>
   </div>
 </nav>
 
@@ -963,6 +969,242 @@ footer .disclaimer { margin-top: 8px; font-size: .78rem; opacity: .7; max-width:
       <div class="insight" style="margin-bottom:12px"><strong>Best time to weigh in:</strong> First thing in the morning, after using the bathroom and before eating. This minimizes daily variation from food and water weight. Use the same scale in the same spot each time.</div>
       <div class="insight success" style="margin-bottom:12px"><strong>Watch the trend, not the number:</strong> Daily weight fluctuates 1–5 lbs due to water retention, sodium, hormones, and digestion. The 7-day moving average (shown in the chart above) is your real signal — ignore day-to-day noise.</div>
       <div class="insight warn"><strong>Scale anxiety is common:</strong> If daily weigh-ins cause stress, switch to 2–3 times per week. The consistency matters more than the frequency. Even weekly tracking is far better than none at all.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 10: WATER INTAKE
+     ============================================================ -->
+<section id="water" class="section">
+  <div class="card">
+    <h2>💧 Daily Water Intake Calculator</h2>
+    <p class="desc">Hydration is one of the most overlooked factors in weight loss. Water suppresses appetite, boosts metabolism, and is essential for fat metabolism. Use this calculator to get your personalized daily target.</p>
+
+    <div class="unit-toggle">
+      <button class="unit-btn active" onclick="setUnit('water','imperial',this)">Imperial (lbs)</button>
+      <button class="unit-btn" onclick="setUnit('water','metric',this)">Metric (kg)</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group water-imperial">
+        <label>Body Weight (lbs)</label>
+        <input type="number" id="water-weight-lb" placeholder="e.g. 170">
+      </div>
+      <div class="form-group water-metric" style="display:none">
+        <label>Body Weight (kg)</label>
+        <input type="number" id="water-weight-kg" placeholder="e.g. 77">
+      </div>
+      <div class="form-group">
+        <label>Activity Level</label>
+        <select id="water-activity">
+          <option value="1.0">Sedentary (desk job, minimal exercise)</option>
+          <option value="1.2">Lightly Active (1–3 workouts/week)</option>
+          <option value="1.4" selected>Moderately Active (4–5 workouts/week)</option>
+          <option value="1.6">Very Active (intense daily exercise)</option>
+          <option value="1.8">Athlete (2× daily or intense endurance)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Climate / Environment</label>
+        <select id="water-climate">
+          <option value="1.0">Temperate (normal indoor/outdoor)</option>
+          <option value="1.1">Warm / Humid</option>
+          <option value="1.2">Hot Climate or High Altitude</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Goal</label>
+        <select id="water-goal">
+          <option value="1.0">General Health</option>
+          <option value="1.1">Weight Loss (extra for metabolism)</option>
+          <option value="1.15">Performance / Endurance</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcWater()">Calculate My Water Target ▶</button>
+
+    <div id="water-results" class="results">
+      <div class="results-grid">
+        <div class="result-box highlight">
+          <span class="result-label">Daily Target</span>
+          <div class="result-value" id="r-water-oz">—</div>
+          <div class="result-unit">fl oz per day</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">In Liters</span>
+          <div class="result-value" id="r-water-l">—</div>
+          <div class="result-unit">liters per day</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">In Cups (8 oz)</span>
+          <div class="result-value" id="r-water-cups">—</div>
+          <div class="result-unit">cups per day</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Standard Bottles</span>
+          <div class="result-value" id="r-water-bottles">—</div>
+          <div class="result-unit">× 16.9 oz bottles</div>
+        </div>
+      </div>
+      <div id="water-schedule" class="insight" style="margin-top:16px"></div>
+      <div id="water-insight" class="insight" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💡 Why Hydration Accelerates Weight Loss</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">Water isn't just essential for survival — it directly influences fat metabolism, appetite control, and calorie burning. Even mild dehydration (1–2% body weight) measurably impairs these processes.</p>
+      <div class="insight success" style="margin-bottom:12px"><strong>Metabolism boost (thermogenesis):</strong> Drinking 17 oz (500ml) of cold water increases metabolic rate by 24–30% for 30–40 minutes. A 2003 study in <em>Journal of Clinical Endocrinology & Metabolism</em> found this could burn an extra 50+ calories per day with consistent hydration.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Appetite suppression:</strong> A 2010 clinical trial found adults who drank 500ml before each meal lost 44% more weight over 12 weeks than non-pre-meal drinkers. Thirst is often mistaken for hunger — drinking first before snacking can cut unnecessary calories.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Fat burning requires water:</strong> Lipolysis (the process of burning fat) requires water molecules. Dehydration literally slows fat burning at the cellular level.</div>
+      <div class="insight warn"><strong>Signs of dehydration to watch:</strong> Dark yellow urine, headaches, fatigue, brain fog, hunger cravings, and workout performance drops — all impair your weight loss efforts. Aim for light yellow urine as your benchmark.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 11: ONE REP MAX
+     ============================================================ -->
+<section id="onerm" class="section">
+  <div class="card">
+    <h2>💪 One Rep Max (1RM) Calculator</h2>
+    <p class="desc">Your One Rep Max is the maximum weight you can lift for a single repetition. Used by strength athletes and coaches to prescribe training loads. No need to max out — lift a submaximal weight and let the formula calculate your 1RM.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Weight Lifted</label>
+        <input type="number" id="orm-weight" placeholder="e.g. 185 lbs or 84 kg">
+      </div>
+      <div class="form-group">
+        <label>Reps Completed (1–10 for best accuracy)</label>
+        <input type="number" id="orm-reps" min="1" max="30" placeholder="e.g. 5">
+      </div>
+      <div class="form-group">
+        <label>Unit</label>
+        <select id="orm-unit">
+          <option value="lbs">lbs</option>
+          <option value="kg">kg</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Exercise (for context)</label>
+        <select id="orm-exercise">
+          <option value="Bench Press">Bench Press</option>
+          <option value="Squat">Back Squat</option>
+          <option value="Deadlift">Deadlift</option>
+          <option value="Overhead Press">Overhead Press</option>
+          <option value="Barbell Row">Barbell Row</option>
+          <option value="Other">Other Exercise</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcORM()">Calculate My 1RM ▶</button>
+
+    <div id="orm-results" class="results">
+      <div class="results-grid" id="orm-formula-boxes"></div>
+      <div id="orm-insight" class="insight" style="margin-top:16px"></div>
+
+      <h3 style="margin:24px 0 12px;font-size:1rem;color:var(--gray2)">Training Load Table (% of estimated 1RM)</h3>
+      <table class="ex-table" id="orm-table">
+        <thead><tr><th>%</th><th>Weight</th><th>Rep Range</th><th>Training Zone</th></tr></thead>
+        <tbody id="orm-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📖 How to Use 1RM for Weight Loss</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">Strength training is one of the most powerful tools for long-term weight management. Unlike cardio, it builds muscle which raises your resting metabolic rate (RMR) — meaning you burn more calories 24/7, not just during the workout.</p>
+      <div class="insight success" style="margin-bottom:12px"><strong>For fat loss + muscle retention:</strong> Train at 70–85% of 1RM, 3–5 sets, 6–12 reps. This rep range optimizes hypertrophy and is the sweet spot for maintaining muscle during a calorie deficit.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Progressive overload:</strong> Aim to increase weight by 2.5–5 lbs (or add 1 rep) every 1–2 weeks. This is the primary driver of muscle growth and metabolic adaptation.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Compound lifts first:</strong> Bench press, squat, deadlift, and overhead press recruit the most muscle mass, burning the most calories and producing the greatest anabolic hormone response.</div>
+      <div class="insight warn"><strong>Safety note:</strong> Never attempt a true 1RM without a spotter and proper warm-up. Submaximal testing (3–5 reps) fed into this calculator is safer and accurate to within 2–5%.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAB 12: INTERMITTENT FASTING
+     ============================================================ -->
+<section id="fasting" class="section">
+  <div class="card">
+    <h2>⏱️ Intermittent Fasting Calculator</h2>
+    <p class="desc">Intermittent fasting (IF) is a time-restricted eating pattern, not a diet. Calculate your optimal eating and fasting windows based on your schedule, then see the metabolic benefits you'll experience during your fast.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Fasting Protocol</label>
+        <select id="if-protocol" onchange="updateIFProtocol()">
+          <option value="16:8">16:8 — 16h fast, 8h eating window (most popular)</option>
+          <option value="18:6">18:6 — 18h fast, 6h eating window</option>
+          <option value="20:4">20:4 — 20h fast, 4h eating window (Warrior Diet)</option>
+          <option value="14:10">14:10 — 14h fast, 10h eating window (beginner-friendly)</option>
+          <option value="OMAD">OMAD — One Meal A Day (23h fast)</option>
+          <option value="5:2">5:2 — Normal eating 5 days, 500 cal on 2 days</option>
+        </select>
+      </div>
+      <div class="form-group" id="if-wake-group">
+        <label>Wake-up Time</label>
+        <input type="time" id="if-wake" value="07:00" style="padding:10px 14px;border:1.5px solid var(--gray4);border-radius:8px;font-size:1rem;font-family:var(--font);background:var(--white)">
+      </div>
+      <div class="form-group" id="if-start-group">
+        <label>Preferred Eating Window Start (optional)</label>
+        <input type="time" id="if-start" value="12:00" style="padding:10px 14px;border:1.5px solid var(--gray4);border-radius:8px;font-size:1rem;font-family:var(--font);background:var(--white)">
+      </div>
+      <div class="form-group">
+        <label>Your Goal</label>
+        <select id="if-goal">
+          <option value="loss">Weight Loss</option>
+          <option value="metabolic">Metabolic Health</option>
+          <option value="autophagy">Autophagy / Longevity</option>
+          <option value="muscle">Muscle Gain + Fat Loss (recomp)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="calcFasting()">Calculate My Fasting Schedule ▶</button>
+
+    <div id="if-results" class="results">
+      <div class="results-grid">
+        <div class="result-box highlight">
+          <span class="result-label">Fasting Window</span>
+          <div class="result-value" id="r-if-fast" style="font-size:1.1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Eating Window</span>
+          <div class="result-value" id="r-if-eat" style="font-size:1.1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Break Fast At</span>
+          <div class="result-value" id="r-if-break" style="font-size:1.1rem">—</div>
+        </div>
+        <div class="result-box">
+          <span class="result-label">Stop Eating At</span>
+          <div class="result-value" id="r-if-stop" style="font-size:1.1rem">—</div>
+        </div>
+      </div>
+
+      <div id="if-timeline" style="margin-top:20px;padding:20px;background:var(--gray5);border-radius:var(--radius)">
+        <h3 style="font-size:.95rem;color:var(--gray2);margin-bottom:12px">📅 What's Happening in Your Body (24h Timeline)</h3>
+        <div id="if-body-events"></div>
+      </div>
+
+      <div id="if-insight" class="insight" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔬 The Science of Intermittent Fasting</h2>
+    <div style="color:var(--gray2);font-size:.93rem;line-height:1.8">
+      <p style="margin-bottom:12px">IF works through multiple mechanisms beyond just reducing calorie intake. Research shows significant metabolic and hormonal benefits that begin at specific hours into a fast.</p>
+      <div class="insight" style="margin-bottom:12px"><strong>Hours 0–4:</strong> Food digestion and absorption. Insulin rises, shuttling glucose to cells. Fat burning is suppressed during this window.</div>
+      <div class="insight" style="margin-bottom:12px"><strong>Hours 4–8:</strong> Insulin falls. Glucagon rises. The body begins drawing on liver glycogen for energy. Blood glucose stabilizes.</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>Hours 8–12:</strong> Glycogen stores depleting. Body shifts toward fat oxidation. Norepinephrine (metabolic rate hormone) begins rising. This is the fat-burning zone for most people.</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>Hours 12–18:</strong> Liver glycogen nearly exhausted. Fat burning is the primary energy source. Ketone production begins. Growth hormone starts rising (muscle-preserving effect).</div>
+      <div class="insight success" style="margin-bottom:12px"><strong>Hours 16–24:</strong> Deep ketosis potential. Autophagy (cellular cleanup) peaks — cells recycle damaged proteins. HGH levels can rise 5× above baseline. Strong anti-inflammatory effects.</div>
+      <div class="insight warn"><strong>Who should be careful with IF:</strong> Pregnant/nursing women, people with history of eating disorders, type 1 diabetics, and those on insulin or blood sugar medication. Always consult your doctor before starting a fasting protocol.</div>
     </div>
   </div>
 </section>
@@ -1714,6 +1956,210 @@ function renderTracker() {
 
 // Init tracker
 renderTracker();
+
+// ── WATER INTAKE ─────────────────────────────────────────────
+function calcWater() {
+  const imperial = document.querySelector('.water-imperial').style.display !== 'none';
+  let weightLb;
+  if (imperial) {
+    weightLb = numVal('water-weight-lb');
+  } else {
+    weightLb = numVal('water-weight-kg') * 2.20462;
+  }
+  if (!weightLb) { alert('Enter your body weight.'); return; }
+
+  const actFactor = parseFloat(strVal('water-activity'));
+  const climateFactor = parseFloat(strVal('water-climate'));
+  const goalFactor = parseFloat(strVal('water-goal'));
+
+  // Base: 0.5 oz per lb of body weight (Institute of Medicine guideline)
+  const baseOz = weightLb * 0.5;
+  const totalOz = Math.round(baseOz * actFactor * climateFactor * goalFactor);
+  const totalL = (totalOz * 0.0295735).toFixed(1);
+  const totalCups = Math.round(totalOz / 8);
+  const totalBottles = (totalOz / 16.9).toFixed(1);
+
+  $('r-water-oz').textContent = totalOz;
+  $('r-water-l').textContent = totalL;
+  $('r-water-cups').textContent = totalCups;
+  $('r-water-bottles').textContent = totalBottles;
+
+  // Drinking schedule
+  const hoursAwake = 16;
+  const ozPerHour = (totalOz / hoursAwake).toFixed(1);
+  $('water-schedule').className = 'insight success';
+  $('water-schedule').innerHTML = `<strong>💧 Hydration Schedule:</strong> Drink approximately <strong>${ozPerHour} oz (${Math.round(ozPerHour * 29.57)} ml) per hour</strong> across ${hoursAwake} waking hours. Start with 16 oz first thing in the morning, and drink 8–16 oz 30 minutes before each meal.`;
+
+  const goal = strVal('water-goal');
+  let insight = '';
+  if (goal === 'loss') {
+    insight = `<strong>Weight Loss Tip:</strong> Drink 16 oz (2 cups) of water 20–30 minutes before each meal. A 2010 randomized controlled trial showed this alone increases weight loss by 44% compared to dieting without pre-meal water.`;
+    $('water-insight').className = 'insight';
+  } else if (goal === 'performance') {
+    insight = `<strong>Performance Tip:</strong> Pre-hydrate with 17 oz 2 hours before exercise. Drink 6–8 oz every 15–20 minutes during workouts. Even 2% dehydration reduces strength output by 10–15%.`;
+    $('water-insight').className = 'insight';
+  } else {
+    insight = `<strong>Hydration Check:</strong> Your urine color is the easiest indicator — aim for pale yellow. Clear means overhydrated (diluting electrolytes); dark yellow means you need more water immediately.`;
+    $('water-insight').className = 'insight';
+  }
+  $('water-insight').innerHTML = insight;
+
+  showResults('water-results');
+}
+
+// ── ONE REP MAX ───────────────────────────────────────────────
+function calcORM() {
+  const weight = numVal('orm-weight');
+  const reps = numVal('orm-reps');
+  const unit = strVal('orm-unit');
+  const exercise = strVal('orm-exercise');
+
+  if (!weight || !reps) { alert('Enter weight lifted and reps completed.'); return; }
+  if (reps < 1 || reps > 30) { alert('Reps should be between 1 and 30 for accurate results.'); return; }
+
+  // Four 1RM formulas
+  const epley    = reps === 1 ? weight : weight * (1 + reps / 30);
+  const brzycki  = reps === 1 ? weight : weight * (36 / (37 - reps));
+  const lombardi = weight * Math.pow(reps, 0.10);
+  const mayhew   = (100 * weight) / (52.2 + 41.9 * Math.exp(-0.055 * reps));
+
+  const avg = (epley + brzycki + lombardi + mayhew) / 4;
+  const avgR = Math.round(avg);
+
+  $('orm-formula-boxes').innerHTML = `
+    <div class="result-box highlight"><span class="result-label">Estimated 1RM</span><div class="result-value">${avgR}</div><div class="result-unit">${unit} (4-formula avg)</div></div>
+    <div class="result-box"><span class="result-label">Epley</span><div class="result-value" style="font-size:1.1rem">${Math.round(epley)}</div><div class="result-unit">${unit}</div></div>
+    <div class="result-box"><span class="result-label">Brzycki</span><div class="result-value" style="font-size:1.1rem">${Math.round(brzycki)}</div><div class="result-unit">${unit}</div></div>
+    <div class="result-box"><span class="result-label">Mayhew</span><div class="result-value" style="font-size:1.1rem">${Math.round(mayhew)}</div><div class="result-unit">${unit}</div></div>
+  `;
+
+  // Training table
+  const zones = [
+    { pct: 50,  rep: '12–15+', zone: 'Muscular Endurance' },
+    { pct: 60,  rep: '10–12',  zone: 'Hypertrophy (Endurance)' },
+    { pct: 70,  rep: '8–10',   zone: 'Hypertrophy (Size)' },
+    { pct: 75,  rep: '6–8',    zone: 'Hypertrophy (Strength-Size)' },
+    { pct: 80,  rep: '4–6',    zone: 'Strength' },
+    { pct: 85,  rep: '3–5',    zone: 'Max Strength' },
+    { pct: 90,  rep: '2–3',    zone: 'Near-Maximal Strength' },
+    { pct: 95,  rep: '1–2',    zone: 'Power / Peaking' },
+    { pct: 100, rep: '1',      zone: 'True Max Effort' },
+  ];
+
+  let rows = '';
+  zones.forEach(z => {
+    const w = Math.round(avg * z.pct / 100);
+    const highlight = z.pct >= 70 && z.pct <= 85 ? ' style="font-weight:600;color:var(--green)"' : '';
+    rows += `<tr><td${highlight}>${z.pct}%</td><td${highlight}>${w} ${unit}</td><td${highlight}>${z.rep}</td><td${highlight}>${z.zone}</td></tr>`;
+  });
+  $('orm-table-body').innerHTML = rows;
+
+  const accuracy = reps <= 5 ? 'very accurate (±2%)' : reps <= 10 ? 'reasonably accurate (±5%)' : 'approximate (higher rep ranges reduce precision)';
+  $('orm-insight').className = 'insight success';
+  $('orm-insight').innerHTML = `<strong>${exercise} — ${reps} reps @ ${weight} ${unit}:</strong> Your estimated 1RM is <strong>${avgR} ${unit}</strong>. At ${reps} reps this estimate is ${accuracy}. For weight loss + muscle retention, train in the <strong>70–85% zone</strong> (${Math.round(avg*0.70)}–${Math.round(avg*0.85)} ${unit}).`;
+
+  showResults('orm-results');
+}
+
+// ── INTERMITTENT FASTING ─────────────────────────────────────
+function updateIFProtocol() {
+  const protocol = strVal('if-protocol');
+  const wakeGroup = $('if-wake-group');
+  const startGroup = $('if-start-group');
+  if (protocol === '5:2') {
+    wakeGroup.style.display = 'none';
+    startGroup.style.display = 'none';
+  } else {
+    wakeGroup.style.display = '';
+    startGroup.style.display = '';
+  }
+}
+
+function fmtTime(totalMins) {
+  const h = Math.floor(((totalMins % 1440) + 1440) % 1440 / 60);
+  const m = ((totalMins % 1440) + 1440) % 1440 % 60;
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+
+function timeToMins(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function calcFasting() {
+  const protocol = strVal('if-protocol');
+  const goal = strVal('if-goal');
+
+  if (protocol === '5:2') {
+    $('r-if-fast').textContent = '2 days/week';
+    $('r-if-eat').textContent = '500–600 cal';
+    $('r-if-break').textContent = 'Normal eating';
+    $('r-if-stop').textContent = '5 normal days';
+    $('if-body-events').innerHTML = `
+      <div class="insight" style="margin-bottom:8px"><strong>Fast Days (Mon + Thu recommended):</strong> Limit to 500 cal (women) or 600 cal (men). Choose low-calorie, high-protein foods to minimize hunger.</div>
+      <div class="insight success"><strong>Normal Days:</strong> Eat your regular TDEE — do not try to compensate by over-eating. The 5:2 works purely through weekly calorie deficit.</div>
+    `;
+    $('if-insight').className = 'insight success';
+    $('if-insight').innerHTML = `<strong>5:2 Method:</strong> Research by Dr. Michael Mosley shows this produces similar weight loss to daily calorie restriction, but with better compliance for many people. Fast on non-consecutive days (e.g., Monday + Thursday).`;
+    showResults('if-results');
+    return;
+  }
+
+  let fastHours, eatHours;
+  if (protocol === 'OMAD') { fastHours = 23; eatHours = 1; }
+  else {
+    [fastHours, eatHours] = protocol.split(':').map(Number);
+  }
+
+  const startMins = timeToMins($('if-start').value || '12:00');
+  const stopMins = startMins + eatHours * 60;
+  const fastStartMins = stopMins;
+  const fastEndMins = stopMins + fastHours * 60;
+
+  $('r-if-fast').textContent = `${fastHours} hours`;
+  $('r-if-eat').textContent = `${eatHours} hour${eatHours > 1 ? 's' : ''}`;
+  $('r-if-break').textContent = fmtTime(startMins);
+  $('r-if-stop').textContent = fmtTime(stopMins);
+
+  // Body events timeline based on fast start
+  const events = [
+    { hour: 0,  icon: '🍽️', text: 'Last meal eaten. Digestion begins. Insulin peaks, fat burning suppressed.' },
+    { hour: 3,  icon: '⚡', text: 'Digestion complete. Blood glucose normalizing. Insulin falling.' },
+    { hour: 8,  icon: '🔥', text: 'Liver glycogen begins depleting. Body starts transitioning to fat oxidation.' },
+    { hour: 12, icon: '💪', text: 'Fat burning accelerating. Growth hormone rising (muscle protection). Ketones beginning.' },
+    { hour: 16, icon: '🧬', text: 'Autophagy (cellular cleanup) activating. Norepinephrine elevated — metabolism boosted.' },
+    { hour: 18, icon: '✨', text: 'Deep fat oxidation. GH may be 5× baseline. Significant anti-inflammatory effects.' },
+  ];
+
+  let eventsHtml = '';
+  events.forEach(e => {
+    if (e.hour <= fastHours) {
+      const eventTime = fmtTime(fastStartMins + e.hour * 60);
+      eventsHtml += `<div style="display:flex;gap:12px;margin-bottom:10px;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1">${e.icon}</span>
+        <div><strong style="font-size:.85rem;color:var(--gray3)">${eventTime} (Hour ${e.hour})</strong><br><span style="font-size:.9rem;color:var(--gray2)">${e.text}</span></div>
+      </div>`;
+    }
+  });
+  $('if-body-events').innerHTML = eventsHtml;
+
+  let insight = '';
+  if (goal === 'loss') {
+    insight = `<strong>Weight Loss Strategy:</strong> Eat your full calorie target (TDEE − deficit) within your ${eatHours}-hour window. IF works by reducing snacking opportunities and improving insulin sensitivity — not by magic. Hit your protein target (0.7–1g/lb) to preserve muscle.`;
+  } else if (goal === 'autophagy') {
+    insight = `<strong>Autophagy Optimization:</strong> Autophagy peaks at 16–18+ hours of fasting and is blocked by protein and calories. For maximum autophagy, avoid BCAAs and protein supplements during the fast. Plain black coffee and water only.`;
+  } else if (goal === 'muscle') {
+    insight = `<strong>Recomposition Tip:</strong> For muscle building during IF, front-load your eating window with a large protein meal (40–60g) within 2 hours of your workout. Casein protein before your last meal helps with overnight muscle protein synthesis.`;
+  } else {
+    insight = `<strong>Metabolic Health:</strong> Studies show IF improves insulin sensitivity, reduces triglycerides, and lowers blood pressure independently of weight loss. Even 2–3 weeks of 16:8 can show measurable improvements in fasting glucose.`;
+  }
+  $('if-insight').className = 'insight success';
+  $('if-insight').innerHTML = insight;
+
+  showResults('if-results');
+}
 
 // ── FAQ ───────────────────────────────────────────────────────
 function toggleFAQ(btn) {
