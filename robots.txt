@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anthonyisonline247.github.io/weight-loss-calculator/sitemap.xml
+Sitemap: https://www.healthmetrichub.com/sitemap.xml
